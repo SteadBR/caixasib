@@ -13,28 +13,20 @@
         .container { display: flex; flex: 1; padding: 1rem; gap: 1rem; overflow: hidden; }
         .escondido { display: none !important; }
         
-        /* Painéis */
+        /* Painéis Caixa */
         .painel-produtos { flex: 2; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 1rem; overflow-y: auto; }
         .btn-produto { background-color: #ecf0f1; border: 1px solid #bdc3c7; padding: 1rem; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background-color 0.2s; }
         .btn-produto span { color: #27ae60; font-size: 0.9rem; display: block; margin-top: 5px; }
         .btn-produto:hover { background-color: #d5dbdb; }
         
-        /* Carrinho e Autocomplete */
         .painel-carrinho { flex: 1; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         
+        /* Autocomplete Cliente */
         .area-cliente { background-color: #ecf0f1; padding: 10px; border-radius: 6px; margin-bottom: 10px; position: relative; }
         .area-cliente label { font-weight: bold; display: block; margin-bottom: 5px; color: #2c3e50; }
-        
         #busca-cliente { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #bdc3c7; font-size: 1rem; }
-        
-        /* Estilo da lista flutuante de sugestões */
-        #lista-sugestoes { 
-            position: absolute; top: 100%; left: 10px; right: 10px; 
-            background: white; border: 1px solid #bdc3c7; border-top: none; 
-            max-height: 150px; overflow-y: auto; list-style: none; 
-            z-index: 100; border-radius: 0 0 6px 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
+        #lista-sugestoes { position: absolute; top: 100%; left: 10px; right: 10px; background: white; border: 1px solid #bdc3c7; border-top: none; max-height: 150px; overflow-y: auto; list-style: none; z-index: 100; border-radius: 0 0 6px 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         #lista-sugestoes li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; font-weight: 500; }
         #lista-sugestoes li:hover { background-color: #3498db; color: white; }
 
@@ -52,7 +44,7 @@
         .pendurar { background-color: #95a5a6; grid-column: span 2; }
         .btn-pagar:hover { opacity: 0.9; }
         
-        /* Telas Genéricas (Relatórios e Clientes) */
+        /* Telas Genéricas */
         .tela-conteudo { background: white; flex: 1; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 2rem; overflow-y: auto; width: 100%; }
         .secao-conteudo { margin-bottom: 2rem; }
         .secao-conteudo h3 { border-bottom: 2px solid #34495e; padding-bottom: 0.5rem; margin-bottom: 1rem; color: #2c3e50; }
@@ -62,10 +54,14 @@
         th { background-color: #f2f2f2; }
         .total-destaque { font-weight: bold; color: #e74c3c; font-size: 1.1rem; }
         
-        /* Formulário Cliente */
-        .form-cliente { display: flex; gap: 10px; margin-bottom: 20px; }
-        .form-cliente input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
-        .form-cliente button { padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        /* Formulários (Cliente e Produto) */
+        .form-cadastro { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .form-cadastro input { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        .form-cadastro input[type="number"] { flex: 0.5; min-width: 100px; }
+        .form-cadastro button { padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-acao { border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; margin-right: 5px; }
+        .btn-editar { background-color: #f39c12; }
+        .btn-excluir { background-color: #e74c3c; }
         
         #status-conexao { font-size: 0.8rem; color: #f1c40f; margin-left: 10px; font-weight: normal; }
     </style>
@@ -73,10 +69,11 @@
 <body>
 
     <header>
-        <h1>Cantina do Retiro <span id="status-conexao"></span></h1>
+        <h1>Cantina <span id="status-conexao"></span></h1>
         <div class="menu-botoes">
             <span id="data-atual" style="margin-right: 20px;"></span>
             <button onclick="window.alternarTela('caixa')">Caixa</button>
+            <button onclick="window.alternarTela('produtos')">Produtos</button>
             <button onclick="window.alternarTela('clientes')">Clientes</button>
             <button onclick="window.alternarTela('relatorios')">Relatórios</button>
         </div>
@@ -85,18 +82,18 @@
     <main class="container" id="tela-caixa">
         <section class="painel-produtos">
             <h2>Produtos</h2>
-            <div id="grade-produtos" class="grade"></div>
+            <div id="grade-produtos" class="grade">
+                <p style="color: #7f8c8d; grid-column: span 3;">Carregando produtos...</p>
+            </div>
         </section>
 
         <section class="painel-carrinho">
             <h2>Pedido Atual</h2>
-            
             <div class="area-cliente">
                 <label for="busca-cliente">Cliente (Pesquise pelo nome):</label>
                 <input type="text" id="busca-cliente" placeholder="Digite para buscar..." autocomplete="off">
                 <ul id="lista-sugestoes" class="escondido"></ul>
             </div>
-
             <ul id="lista-carrinho">
                 <li class="item-vazio">O carrinho está vazio.</li>
             </ul>
@@ -112,17 +109,40 @@
         </section>
     </main>
 
+    <main class="container escondido" id="tela-produtos">
+        <div class="tela-conteudo">
+            <div style="max-width: 800px; margin: 0 auto; width: 100%;">
+                <h2>Gerenciar Produtos</h2>
+                <p style="margin-bottom: 2rem; color: #7f8c8d;">Adicione, edite valores ou remova itens da cantina.</p>
+                
+                <div class="form-cadastro">
+                    <input type="hidden" id="produto-id">
+                    <input type="text" id="produto-nome" placeholder="Nome do produto (ex: Refrigerante)..." autocomplete="off">
+                    <input type="number" id="produto-preco" placeholder="Preço (ex: 5.50)" step="0.01" min="0">
+                    <button onclick="window.salvarProduto()">Salvar Produto</button>
+                    <button onclick="window.limparFormProduto()" style="background-color: #95a5a6;">Cancelar / Limpar</button>
+                </div>
+
+                <div class="secao-conteudo">
+                    <h3>Lista de Produtos</h3>
+                    <table id="tabela-lista-produtos">
+                        <thead><tr><th>Nome</th><th>Preço</th><th>Ações</th></tr></thead>
+                        <tbody><tr><td colspan="3">Carregando...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <main class="container escondido" id="tela-clientes">
         <div class="tela-conteudo">
             <div style="max-width: 800px; margin: 0 auto; width: 100%;">
                 <h2>Gerenciar Clientes</h2>
                 <p style="margin-bottom: 2rem; color: #7f8c8d;">Cadastre os participantes para pesquisar no caixa.</p>
-                
-                <div class="form-cliente">
+                <div class="form-cadastro">
                     <input type="text" id="novo-cliente-nome" placeholder="Digite o nome completo do cliente..." autocomplete="off">
                     <button onclick="window.cadastrarCliente()">Cadastrar Cliente</button>
                 </div>
-
                 <div class="secao-conteudo">
                     <h3>Lista de Clientes Cadastrados</h3>
                     <table id="tabela-lista-clientes">
@@ -138,14 +158,11 @@
         <div class="tela-conteudo">
             <div style="max-width: 800px; margin: 0 auto; width: 100%;">
                 <h2>Relatório de Vendas (Nuvem)</h2>
-                <p style="margin-bottom: 2rem; color: #7f8c8d;">Dados puxados diretamente do banco de dados Firebase.</p>
-                
                 <div class="secao-conteudo">
                     <h3>Resumo Financeiro</h3>
                     <p>Total Recebido (Dinheiro, Pix, Cartão): <span id="rel-total-recebido" class="total-destaque">R$ 0,00</span></p>
                     <p>Total Pendurado (A Receber): <span id="rel-total-pendurado" class="total-destaque" style="color:#e67e22;">R$ 0,00</span></p>
                 </div>
-
                 <div class="secao-conteudo">
                     <h3>Contas Penduradas (Fiado) por Cliente</h3>
                     <table id="tabela-fiados">
@@ -153,7 +170,6 @@
                         <tbody></tbody>
                     </table>
                 </div>
-
                 <div class="secao-conteudo">
                     <h3>Histórico de Vendas</h3>
                     <table id="tabela-historico">
@@ -161,7 +177,6 @@
                         <tbody></tbody>
                     </table>
                 </div>
-                
                 <button onclick="window.limparDadosVendas()" style="background-color:#e74c3c; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer; margin-top:20px;">Apagar Histórico de VENDAS no Banco</button>
             </div>
         </div>
@@ -169,7 +184,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // Importando updateDoc agora
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBRf7n_kUeobVTBzSdX4bE3Suuv9eUprmI",
@@ -183,41 +199,146 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const produtos = [
-            { id: 1, nome: 'Refrigerante Lata', preco: 5.00 },
-            { id: 2, nome: 'Salgado Assado', preco: 6.00 },
-            { id: 3, nome: 'Salgado Frito', preco: 5.00 },
-            { id: 4, nome: 'Bolo Fatiado', preco: 4.00 },
-            { id: 5, nome: 'Água Mineral', preco: 2.00 },
-            { id: 6, nome: 'Suco de Caixinha', preco: 4.00 },
-            { id: 7, nome: 'Bombom', preco: 2.50 },
-            { id: 8, nome: 'Halls/Bala', preco: 2.00 },
-            { id: 9, nome: 'Cachorro Quente', preco: 8.00 },
-            { id: 10, nome: 'Misto Quente', preco: 7.00 }
-        ];
-
         let carrinho = [];
         let total = 0;
         let listaClientesCache = []; 
+        let listaProdutosCache = []; // Agora puxamos do Firebase
 
-        // --- INICIALIZAÇÃO E CARRINHO ---
+        // --- INICIALIZAÇÃO ---
         window.iniciarSistema = function() {
             document.getElementById('data-atual').textContent = new Date().toLocaleDateString('pt-BR');
+            
+            window.configurarPesquisaClientes();
+            window.buscarClientes();
+            window.buscarProdutos(); // Busca produtos do Firebase
+        };
+
+        // --- GESTÃO DE PRODUTOS ---
+        window.buscarProdutos = async function() {
+            document.getElementById('status-conexao').textContent = "(Atualizando produtos...)";
+            try {
+                const q = query(collection(db, "produtos"), orderBy("nome"));
+                const querySnapshot = await getDocs(q);
+                
+                listaProdutosCache = [];
+                querySnapshot.forEach((doc) => {
+                    listaProdutosCache.push({ id: doc.id, nome: doc.data().nome, preco: parseFloat(doc.data().preco) });
+                });
+
+                window.renderizarGradeProdutos();
+                window.renderizarTabelaProdutos();
+            } catch (e) {
+                console.error("Erro ao buscar produtos: ", e);
+            } finally {
+                document.getElementById('status-conexao').textContent = "";
+            }
+        };
+
+        window.renderizarGradeProdutos = function() {
             const gradeProdutos = document.getElementById('grade-produtos');
             gradeProdutos.innerHTML = '';
             
-            produtos.forEach(produto => {
+            if (listaProdutosCache.length === 0) {
+                gradeProdutos.innerHTML = '<p style="color: #7f8c8d; grid-column: span 3;">Nenhum produto cadastrado. Vá na aba "Produtos" e adicione os itens.</p>';
+                return;
+            }
+
+            listaProdutosCache.forEach(produto => {
                 const btn = document.createElement('button');
                 btn.className = 'btn-produto';
                 btn.innerHTML = `${produto.nome} <span>R$ ${produto.preco.toFixed(2).replace('.', ',')}</span>`;
                 btn.onclick = () => window.adicionarAoCarrinho(produto);
                 gradeProdutos.appendChild(btn);
             });
-
-            window.configurarPesquisaClientes();
-            window.buscarClientes();
         };
 
+        window.renderizarTabelaProdutos = function() {
+            const tbody = document.querySelector('#tabela-lista-produtos tbody');
+            tbody.innerHTML = '';
+
+            if (listaProdutosCache.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">Nenhum produto cadastrado.</td></tr>';
+            } else {
+                listaProdutosCache.forEach(produto => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${produto.nome}</td>
+                        <td style="font-weight: bold; color: #27ae60;">R$ ${produto.preco.toFixed(2).replace('.', ',')}</td>
+                        <td>
+                            <button class="btn-acao btn-editar" onclick="window.editarProduto('${produto.id}')">Editar</button>
+                            <button class="btn-acao btn-excluir" onclick="window.excluirProduto('${produto.id}')">Excluir</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        };
+
+        window.salvarProduto = async function() {
+            const id = document.getElementById('produto-id').value;
+            const nome = document.getElementById('produto-nome').value.trim();
+            const precoStr = document.getElementById('produto-preco').value.replace(',', '.');
+            const preco = parseFloat(precoStr);
+
+            if (!nome || isNaN(preco) || preco < 0) {
+                alert("Por favor, preencha o NOME e um PREÇO válido (ex: 5.50).");
+                return;
+            }
+
+            document.getElementById('status-conexao').textContent = "(Salvando produto...)";
+            try {
+                if (id) {
+                    // Atualiza um produto existente
+                    const ref = doc(db, "produtos", id);
+                    await updateDoc(ref, { nome: nome, preco: preco });
+                    alert("Produto atualizado com sucesso!");
+                } else {
+                    // Cria um novo produto
+                    await addDoc(collection(db, "produtos"), { nome: nome, preco: preco });
+                    alert("Novo produto cadastrado!");
+                }
+                
+                window.limparFormProduto();
+                await window.buscarProdutos(); // Recarrega as listas
+            } catch (e) {
+                console.error("Erro ao salvar produto: ", e);
+                alert("Erro ao salvar. Verifique a conexão.");
+            } finally {
+                document.getElementById('status-conexao').textContent = "";
+            }
+        };
+
+        window.editarProduto = function(id) {
+            const produto = listaProdutosCache.find(p => p.id === id);
+            if (produto) {
+                document.getElementById('produto-id').value = produto.id;
+                document.getElementById('produto-nome').value = produto.nome;
+                document.getElementById('produto-preco').value = produto.preco.toFixed(2);
+                document.getElementById('produto-nome').focus();
+            }
+        };
+
+        window.excluirProduto = async function(id) {
+            if (confirm("Tem certeza que deseja EXCLUIR este produto definitivamente?")) {
+                document.getElementById('status-conexao').textContent = "(Excluindo...)";
+                try {
+                    await deleteDoc(doc(db, "produtos", id));
+                    await window.buscarProdutos();
+                } catch(e) {
+                    console.error("Erro ao excluir: ", e);
+                } finally {
+                    document.getElementById('status-conexao').textContent = "";
+                }
+            }
+        };
+
+        window.limparFormProduto = function() {
+            document.getElementById('produto-id').value = '';
+            document.getElementById('produto-nome').value = '';
+            document.getElementById('produto-preco').value = '';
+        };
+
+        // --- CARRINHO ---
         window.adicionarAoCarrinho = function(produto) {
             carrinho.push(produto);
             window.atualizarCarrinho();
@@ -256,28 +377,25 @@
             const inputBusca = document.getElementById('busca-cliente');
             const listaSugestoes = document.getElementById('lista-sugestoes');
 
-            // Evento enquanto o usuário digita
             inputBusca.addEventListener('input', function() {
                 const termo = this.value.toLowerCase().trim();
-                listaSugestoes.innerHTML = ''; // Limpa a lista atual
+                listaSugestoes.innerHTML = ''; 
 
                 if (!termo) {
                     listaSugestoes.classList.add('escondido');
                     return;
                 }
 
-                // Filtra os clientes que contém o termo digitado
                 const filtrados = listaClientesCache.filter(c => c.nome.toLowerCase().includes(termo));
                 
                 if (filtrados.length > 0) {
-                    listaSugestoes.classList.remove('escondido'); // Mostra a lista
+                    listaSugestoes.classList.remove('escondido');
                     filtrados.forEach(c => {
                         const li = document.createElement('li');
                         li.textContent = c.nome;
-                        // O que acontece quando clica na sugestão
                         li.onclick = () => {
-                            inputBusca.value = c.nome; // Preenche o input com o nome exato
-                            listaSugestoes.classList.add('escondido'); // Esconde a lista
+                            inputBusca.value = c.nome;
+                            listaSugestoes.classList.add('escondido');
                         };
                         listaSugestoes.appendChild(li);
                     });
@@ -286,7 +404,6 @@
                 }
             });
 
-            // Esconde a lista se clicar fora do campo
             document.addEventListener('click', function(e) {
                 if (e.target !== inputBusca && e.target !== listaSugestoes) {
                     listaSugestoes.classList.add('escondido');
@@ -296,7 +413,6 @@
 
         // --- GESTÃO DE CLIENTES ---
         window.buscarClientes = async function() {
-            document.getElementById('status-conexao').textContent = "(Atualizando clientes...)";
             try {
                 const q = query(collection(db, "clientes"), orderBy("nome"));
                 const querySnapshot = await getDocs(q);
@@ -308,9 +424,7 @@
 
                 window.atualizarTabelaClientes();
             } catch (e) {
-                console.error("Erro ao buscar clientes: ", e);
-            } finally {
-                document.getElementById('status-conexao').textContent = "";
+                console.error(e);
             }
         };
 
@@ -333,21 +447,16 @@
             const inputNome = document.getElementById('novo-cliente-nome');
             const nome = inputNome.value.trim();
 
-            if (!nome) {
-                alert("Por favor, digite o nome do cliente.");
-                return;
-            }
+            if (!nome) { alert("Digite o nome."); return; }
 
             document.getElementById('status-conexao').textContent = "(Salvando cliente...)";
-            
             try {
                 await addDoc(collection(db, "clientes"), { nome: nome });
                 inputNome.value = ''; 
-                alert("Cliente cadastrado com sucesso!");
+                alert("Cliente cadastrado!");
                 await window.buscarClientes(); 
             } catch (e) {
-                console.error("Erro ao cadastrar cliente: ", e);
-                alert("Erro ao cadastrar. Verifique a conexão.");
+                console.error(e);
             } finally {
                 document.getElementById('status-conexao').textContent = "";
             }
@@ -369,19 +478,17 @@
                 return;
             }
 
-            // Validação de segurança: Verifica se o nome digitado realmente existe no banco
             const clienteValido = listaClientesCache.find(c => c.nome.toLowerCase() === nomeDigitado.toLowerCase());
             
             if (!clienteValido) {
-                alert('CLIENTE NÃO ENCONTRADO! Por favor, clique no nome do cliente na lista de sugestões. Se for um cliente novo, cadastre-o na aba "Clientes".');
+                alert('CLIENTE NÃO ENCONTRADO! Clique na sugestão ou cadastre o cliente na aba "Clientes".');
                 inputBusca.focus();
                 return;
             }
 
-            // Usa o nome exato do banco (corrigindo maiúsculas/minúsculas)
             const clienteSelecionado = clienteValido.nome;
 
-            document.getElementById('status-conexao').textContent = "(Salvando venda na nuvem...)";
+            document.getElementById('status-conexao').textContent = "(Salvando venda...)";
 
             const venda = {
                 data: new Date().toLocaleString('pt-BR'),
@@ -392,15 +499,13 @@
 
             try {
                 await addDoc(collection(db, "vendas"), venda);
-                alert(`Venda salva na nuvem com sucesso!\nCliente: ${clienteSelecionado}\nMétodo: ${metodo}\nTotal: R$ ${total.toFixed(2).replace('.', ',')}`);
+                alert(`Venda salva!\nCliente: ${clienteSelecionado}\nMétodo: ${metodo}\nTotal: R$ ${total.toFixed(2).replace('.', ',')}`);
                 
-                // Reseta o caixa
                 carrinho = [];
                 window.atualizarCarrinho();
-                inputBusca.value = ''; // Reseta o campo de pesquisa
+                inputBusca.value = ''; 
             } catch (e) {
-                console.error("Erro ao salvar venda: ", e);
-                alert("Erro ao salvar a venda.");
+                console.error(e);
             } finally {
                 document.getElementById('status-conexao').textContent = "";
             }
@@ -409,21 +514,19 @@
         // --- NAVEGAÇÃO E RELATÓRIOS ---
         window.alternarTela = function(tela) {
             document.getElementById('tela-caixa').classList.add('escondido');
+            document.getElementById('tela-produtos').classList.add('escondido');
             document.getElementById('tela-clientes').classList.add('escondido');
             document.getElementById('tela-relatorios').classList.add('escondido');
 
-            if (tela === 'caixa') {
-                document.getElementById('tela-caixa').classList.remove('escondido');
-            } else if (tela === 'clientes') {
-                document.getElementById('tela-clientes').classList.remove('escondido');
-            } else if (tela === 'relatorios') {
-                document.getElementById('tela-relatorios').classList.remove('escondido');
+            document.getElementById('tela-' + tela).classList.remove('escondido');
+
+            if (tela === 'relatorios') {
                 window.gerarRelatorios();
             }
         };
 
         window.gerarRelatorios = async function() {
-            document.getElementById('status-conexao').textContent = "(Buscando vendas na nuvem...)";
+            document.getElementById('status-conexao').textContent = "(Buscando vendas...)";
             
             let totalRecebido = 0; let totalPendurado = 0; const contasClientes = {};
             const tbodyHistorico = document.querySelector('#tabela-historico tbody');
@@ -463,7 +566,7 @@
                     }
                 }
             } catch(e) {
-                console.error("Erro ao buscar vendas: ", e);
+                console.error(e);
                 tbodyHistorico.innerHTML = '<tr><td colspan="4">Erro ao carregar relatórios.</td></tr>';
             } finally {
                 document.getElementById('status-conexao').textContent = "";
@@ -471,20 +574,17 @@
         };
 
         window.limparDadosVendas = async function() {
-            if(confirm("ATENÇÃO: Isso apagará o histórico de VENDAS do banco de dados (os clientes não serão apagados). Tem certeza?")) {
+            if(confirm("ATENÇÃO: Isso apagará o histórico de VENDAS do banco de dados (os clientes e produtos NÃO serão apagados). Tem certeza?")) {
                 document.getElementById('status-conexao').textContent = "(Apagando vendas...)";
                 try {
                     const querySnapshot = await getDocs(collection(db, "vendas"));
                     querySnapshot.forEach(async (documento) => {
                         await deleteDoc(doc(db, "vendas", documento.id));
                     });
-                    alert("Comandos de exclusão de vendas enviados ao banco.");
+                    alert("Comandos de exclusão enviados.");
                     setTimeout(() => window.gerarRelatorios(), 2000); 
-                } catch(e) {
-                    console.error("Erro ao apagar vendas: ", e);
-                } finally {
-                    document.getElementById('status-conexao').textContent = "";
-                }
+                } catch(e) { console.error(e); } 
+                finally { document.getElementById('status-conexao').textContent = ""; }
             }
         };
 
