@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cantina do Retiro - Nuvem</title>
+    <link rel="icon" href="https://i.imgur.com/pu8hcXt.png" type="image/png">
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f4f9; color: #333; display: flex; flex-direction: column; height: 100vh; }
         
-        /* Cabeçalho */
+        /* Cabeçalho com Logo */
         header { background-color: #2c3e50; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .logo-header { display: flex; align-items: center; gap: 15px; }
+        .img-logo { height: 45px; border-radius: 50%; background-color: white; padding: 2px; }
+        
         .menu-botoes button { background-color: #34495e; color: white; border: 1px solid #ecf0f1; padding: 0.5rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 5px; }
         .menu-botoes button:hover { background-color: #ecf0f1; color: #2c3e50; }
         .btn-sair { background-color: #c0392b !important; border-color: #e74c3c !important; margin-left: 20px !important;}
@@ -18,9 +23,10 @@
         .container { display: flex; flex: 1; padding: 1rem; gap: 1rem; overflow: hidden; }
         .escondido { display: none !important; }
         
-        /* TELA DE LOGIN */
+        /* TELA DE LOGIN COM LOGO */
         #tela-login { flex-direction: column; justify-content: center; align-items: center; background-color: #2c3e50; color: white; height: 100vh; display: flex; }
         .caixa-login { background: white; padding: 3rem; border-radius: 8px; text-align: center; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .caixa-login img { height: 100px; margin-bottom: 1rem; border-radius: 50%; border: 3px solid #3498db; padding: 5px; }
         .caixa-login h1 { margin-bottom: 1rem; color: #2c3e50; }
         .btn-google { background-color: #4285F4; color: white; border: none; padding: 12px 24px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .btn-google:hover { background-color: #3367D6; }
@@ -28,7 +34,7 @@
         /* Painéis Caixa */
         .painel-produtos { flex: 2; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 1rem; overflow-y: auto; }
-        .btn-produto { background-color: #ecf0f1; border: 1px solid #bdc3c7; padding: 1rem; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background-color 0.2s; }
+        .btn-produto { background-color: #ecf0f1; border: 1px solid #bdc3c7; padding: 1rem; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background-color 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
         .btn-produto span { color: #27ae60; font-size: 0.9rem; display: block; margin-top: 5px; }
         .btn-produto:hover { background-color: #d5dbdb; }
         
@@ -81,6 +87,7 @@
 
     <div id="tela-login">
         <div class="caixa-login">
+            <img src="https://i.imgur.com/pu8hcXt.png" alt="Logo Cantina SIB">
             <h1>Cantina do Retiro</h1>
             <p>Acesso restrito a usuários autorizados.</p>
             <button class="btn-google" onclick="window.loginGoogle()">
@@ -91,7 +98,10 @@
     </div>
 
     <header id="cabecalho-sistema" class="escondido">
-        <h1>Cantina <span id="status-conexao"></span></h1>
+        <div class="logo-header">
+            <img src="https://i.imgur.com/pu8hcXt.png" alt="Logo" class="img-logo">
+            <h1>Cantina <span id="status-conexao"></span></h1>
+        </div>
         <div class="menu-botoes">
             <span id="data-atual" style="margin-right: 15px;"></span>
             <button onclick="window.alternarTela('caixa')">Caixa</button>
@@ -172,20 +182,38 @@
 
     <main class="container escondido" id="tela-relatorios">
         <div class="tela-conteudo">
-            <div style="max-width: 800px; margin: 0 auto; width: 100%;">
-                <h2>Relatório de Vendas</h2>
-                <div class="secao-conteudo">
-                    <h3>Resumo Financeiro</h3>
-                    <p>Recebido (Din/Pix/Cartão): <span id="rel-total-recebido" class="total-destaque">R$ 0,00</span></p>
-                    <p>Pendurado (A Receber): <span id="rel-total-pendurado" class="total-destaque" style="color:#e67e22;">R$ 0,00</span></p>
+            <div style="max-width: 900px; margin: 0 auto; width: 100%;">
+                <h2>Central de Relatórios</h2>
+                
+                <div class="secao-conteudo" style="background: #ecf0f1; padding: 20px; border-radius: 8px; border: 1px solid #bdc3c7;">
+                    <h3>Extrato Detalhado do Cliente (Conta)</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 10px; color: #7f8c8d;">Veja exatamente o que cada pessoa consumiu e quanto falta pagar.</p>
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <select id="rel-cliente-select" style="flex: 1; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 1rem;">
+                            <option value="">-- Carregando clientes do relatório... --</option>
+                        </select>
+                        <button onclick="window.gerarExtratoCliente()" style="padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Ver Extrato da Pessoa</button>
+                    </div>
+                    
+                    <div id="resultado-extrato" class="escondido" style="background: white; padding: 15px; border-radius: 6px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+                        </div>
                 </div>
+
                 <div class="secao-conteudo">
-                    <h3>Fiados por Cliente</h3>
-                    <table id="tabela-fiados"><thead><tr><th>Cliente</th><th>Valor</th></tr></thead><tbody></tbody></table>
+                    <h3>Resumo Financeiro Global</h3>
+                    <p>Total Recebido na Hora (Dinheiro/Pix/Cartão): <span id="rel-total-recebido" class="total-destaque">R$ 0,00</span></p>
+                    <p>Total Pendurado na Rua (A Receber): <span id="rel-total-pendurado" class="total-destaque" style="color:#e67e22;">R$ 0,00</span></p>
                 </div>
+                
                 <div class="secao-conteudo">
-                    <h3>Histórico</h3>
-                    <table id="tabela-historico"><thead><tr><th>Data</th><th>Método</th><th>Cliente</th><th>Valor</th></tr></thead><tbody></tbody></table>
+                    <h3>Todas as Contas Penduradas (Fiados Gerais)</h3>
+                    <table id="tabela-fiados"><thead><tr><th>Cliente</th><th>Valor Total Devido</th></tr></thead><tbody></tbody></table>
+                </div>
+
+                <div class="secao-conteudo">
+                    <h3>Histórico Bruto de Vendas</h3>
+                    <table id="tabela-historico"><thead><tr><th>Data/Hora</th><th>Método</th><th>Cliente</th><th>Valor Venda</th></tr></thead><tbody></tbody></table>
                 </div>
             </div>
         </div>
@@ -195,13 +223,11 @@
         <div class="tela-conteudo">
             <div style="max-width: 800px; margin: 0 auto; width: 100%;">
                 <h2>Gerenciar Acessos ao Sistema</h2>
-                <p style="margin-bottom: 2rem; color: #7f8c8d;">Apenas as contas Google cadastradas abaixo poderão acessar a Cantina.</p>
                 <div class="form-cadastro">
                     <input type="email" id="novo-acesso-email" placeholder="Digite o e-mail do Gmail para autorizar..." autocomplete="off">
                     <button onclick="window.autorizarEmail()">Autorizar E-mail</button>
                 </div>
                 <div class="secao-conteudo">
-                    <h3>Contas Autorizadas</h3>
                     <table id="tabela-acessos">
                         <thead><tr><th>E-mail Autorizado</th><th>Ações</th></tr></thead>
                         <tbody></tbody>
@@ -214,7 +240,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, deleteDoc, doc, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        // Importando a Autenticação
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -229,39 +254,30 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        // Configuração de Login
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
         const EMAIL_ADMIN_MASTER = "leovitorjipa@gmail.com";
         let emailUsuarioLogado = "";
 
-        // Variáveis do Sistema
         let carrinho = [];
         let total = 0;
         let listaClientesCache = []; 
         let listaProdutosCache = [];
+        let vendasCacheGlobal = []; // Guarda as vendas para gerar extratos rápidos
 
         // ==========================================
         // SISTEMA DE AUTENTICAÇÃO
         // ==========================================
         
         window.loginGoogle = async function() {
-            try {
-                await signInWithPopup(auth, provider);
-            } catch (error) {
-                console.error("Erro no login", error);
-                alert("Falha ao tentar fazer o login. Verifique se a Autenticação Google está ativada no Firebase.");
-            }
+            try { await signInWithPopup(auth, provider); } 
+            catch (error) { console.error("Erro no login", error); alert("Falha ao tentar fazer o login."); }
         };
 
         window.logout = async function() {
-            if(confirm("Deseja sair do sistema?")) {
-                await signOut(auth);
-                window.location.reload();
-            }
+            if(confirm("Deseja sair do sistema?")) { await signOut(auth); window.location.reload(); }
         };
 
-        // Observador que verifica se alguém logou ou deslogou
         onAuthStateChanged(auth, async (user) => {
             const telaLogin = document.getElementById('tela-login');
             const cabecalho = document.getElementById('cabecalho-sistema');
@@ -270,39 +286,28 @@
                 const email = user.email.toLowerCase();
                 let temPermissao = false;
 
-                // 1. O admin master sempre tem acesso
-                if (email === EMAIL_ADMIN_MASTER) {
-                    temPermissao = true;
-                } else {
-                    // 2. Se não for o admin, verifica se o email está no banco de dados
-                    const docRef = doc(db, "usuarios_autorizados", email);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        temPermissao = true;
-                    }
+                if (email === EMAIL_ADMIN_MASTER) temPermissao = true;
+                else {
+                    const docSnap = await getDoc(doc(db, "usuarios_autorizados", email));
+                    if (docSnap.exists()) temPermissao = true;
                 }
 
                 if (temPermissao) {
-                    // LOGIN BEM SUCEDIDO
                     emailUsuarioLogado = email;
                     telaLogin.classList.add('escondido');
                     cabecalho.classList.remove('escondido');
                     document.getElementById('status-conexao').textContent = `(Logado como ${email})`;
                     
-                    window.alternarTela('caixa'); // Inicia pelo caixa
-                    window.iniciarSistema(); // Carrega produtos e clientes
+                    window.alternarTela('caixa'); 
+                    window.iniciarSistema(); 
                 } else {
-                    // SEM PERMISSÃO
                     alert(`Acesso Negado!\nO e-mail "${email}" não tem permissão para usar este sistema.`);
-                    await signOut(auth); // Desloga imediatamente
+                    await signOut(auth);
                 }
             } else {
-                // DESLOGADO: Mostra tela inicial, esconde tudo
                 telaLogin.classList.remove('escondido');
                 cabecalho.classList.add('escondido');
-                ['caixa', 'produtos', 'clientes', 'relatorios', 'acessos'].forEach(t => {
-                    document.getElementById('tela-' + t).classList.add('escondido');
-                });
+                ['caixa', 'produtos', 'clientes', 'relatorios', 'acessos'].forEach(t => { document.getElementById('tela-' + t).classList.add('escondido'); });
             }
         });
 
@@ -312,64 +317,42 @@
 
         window.autorizarEmail = async function() {
             const novoEmail = document.getElementById('novo-acesso-email').value.trim().toLowerCase();
-            if (!novoEmail || !novoEmail.includes("@")) {
-                alert("Digite um e-mail válido."); return;
-            }
-
+            if (!novoEmail || !novoEmail.includes("@")) { alert("Digite um e-mail válido."); return; }
             document.getElementById('status-conexao').textContent = "(Salvando acesso...)";
             try {
-                // Usa o próprio email como ID do documento no Firebase (facilita muito a busca)
-                await setDoc(doc(db, "usuarios_autorizados", novoEmail), { 
-                    email: novoEmail, 
-                    adicionadoPor: emailUsuarioLogado 
-                });
+                await setDoc(doc(db, "usuarios_autorizados", novoEmail), { email: novoEmail, adicionadoPor: emailUsuarioLogado });
                 alert("E-mail autorizado com sucesso!");
                 document.getElementById('novo-acesso-email').value = "";
                 window.listarAcessos();
-            } catch (e) {
-                console.error("Erro ao autorizar", e);
-            } finally {
-                document.getElementById('status-conexao').textContent = `(Logado como ${emailUsuarioLogado})`;
-            }
+            } catch (e) { console.error(e); } 
+            finally { document.getElementById('status-conexao').textContent = `(Logado como ${emailUsuarioLogado})`; }
         };
 
         window.listarAcessos = async function() {
             const tbody = document.querySelector('#tabela-acessos tbody');
             tbody.innerHTML = '<tr><td colspan="2">Carregando...</td></tr>';
-            
             try {
                 const querySnapshot = await getDocs(collection(db, "usuarios_autorizados"));
                 tbody.innerHTML = '';
-                
-                // Adiciona a linha do Admin Master visualmente (mesmo que não esteja no banco)
                 const trAdmin = document.createElement('tr');
                 trAdmin.innerHTML = `<td><b>${EMAIL_ADMIN_MASTER} (Admin Master)</b></td><td><i>Irremovível</i></td>`;
                 tbody.appendChild(trAdmin);
 
                 querySnapshot.forEach((doc) => {
                     const email = doc.id;
-                    if(email !== EMAIL_ADMIN_MASTER) { // Só pra não duplicar caso o admin acabe salvando o próprio nome
+                    if(email !== EMAIL_ADMIN_MASTER) { 
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${email}</td>
-                            <td><button class="btn-acao btn-excluir" onclick="window.removerAcesso('${email}')">Remover Acesso</button></td>
-                        `;
+                        tr.innerHTML = `<td>${email}</td><td><button class="btn-acao btn-excluir" onclick="window.removerAcesso('${email}')">Remover Acesso</button></td>`;
                         tbody.appendChild(tr);
                     }
                 });
-            } catch(e) {
-                console.error(e);
-            }
+            } catch(e) { console.error(e); }
         };
 
         window.removerAcesso = async function(emailRemover) {
             if(confirm(`Tem certeza que deseja REVOGAR O ACESSO de ${emailRemover}?`)) {
-                try {
-                    await deleteDoc(doc(db, "usuarios_autorizados", emailRemover));
-                    window.listarAcessos();
-                } catch(e) {
-                    console.error("Erro ao remover", e);
-                }
+                try { await deleteDoc(doc(db, "usuarios_autorizados", emailRemover)); window.listarAcessos(); } 
+                catch(e) { console.error(e); }
             }
         };
 
@@ -385,11 +368,8 @@
         };
 
         window.alternarTela = function(tela) {
-            ['caixa', 'produtos', 'clientes', 'relatorios', 'acessos'].forEach(t => {
-                document.getElementById('tela-' + t).classList.add('escondido');
-            });
+            ['caixa', 'produtos', 'clientes', 'relatorios', 'acessos'].forEach(t => { document.getElementById('tela-' + t).classList.add('escondido'); });
             document.getElementById('tela-' + tela).classList.remove('escondido');
-
             if (tela === 'relatorios') window.gerarRelatorios();
             if (tela === 'acessos') window.listarAcessos();
         };
@@ -451,10 +431,7 @@
             if(p) { document.getElementById('produto-id').value = p.id; document.getElementById('produto-nome').value = p.nome; document.getElementById('produto-preco').value = p.preco.toFixed(2); }
         };
         
-        window.excluirProduto = async function(id) {
-            if(confirm("Excluir produto?")) { await deleteDoc(doc(db, "produtos", id)); await window.buscarProdutos(); }
-        };
-        
+        window.excluirProduto = async function(id) { if(confirm("Excluir produto?")) { await deleteDoc(doc(db, "produtos", id)); await window.buscarProdutos(); } };
         window.limparFormProduto = function() { document.getElementById('produto-id').value = ''; document.getElementById('produto-nome').value = ''; document.getElementById('produto-preco').value = ''; };
 
         // CAIXA / CARRINHO
@@ -484,12 +461,16 @@
             const clienteValido = listaClientesCache.find(c => c.nome.toLowerCase() === nomeDigitado.toLowerCase());
             if (!clienteValido) { alert('Cliente não encontrado.'); return; }
 
+            // Salva os itens consumidos na venda
+            const itensComprados = carrinho.map(i => ({ nome: i.nome, preco: i.preco }));
+
             const venda = {
                 data: new Date().toLocaleString('pt-BR'),
                 cliente: clienteValido.nome,
                 metodoPagamento: metodo,
                 total: total,
-                vendedor: emailUsuarioLogado // Salva quem fez a venda
+                vendedor: emailUsuarioLogado,
+                itens: itensComprados // NOVO: Guarda os produtos comprados
             };
 
             try {
@@ -544,35 +525,138 @@
             } catch (e) { console.error(e); }
         };
 
-        // RELATÓRIOS
+        // ==========================================
+        // RELATÓRIOS E EXTRATO DE CLIENTES
+        // ==========================================
         window.gerarRelatorios = async function() {
             let totalRecebido = 0; let totalPendurado = 0; const contasClientes = {};
             const tbodyHistorico = document.querySelector('#tabela-historico tbody');
             const tbodyFiados = document.querySelector('#tabela-fiados tbody');
-            tbodyHistorico.innerHTML = ''; tbodyFiados.innerHTML = '';
+            const selectExtrato = document.getElementById('rel-cliente-select');
+            
+            tbodyHistorico.innerHTML = '<tr><td colspan="4">Carregando...</td></tr>';
+            tbodyFiados.innerHTML = '<tr><td colspan="2">Carregando...</td></tr>';
+            vendasCacheGlobal = []; // Limpa o cache
 
             try {
+                // Puxa tudo do banco
                 const querySnapshot = await getDocs(collection(db, "vendas"));
+                tbodyHistorico.innerHTML = ''; tbodyFiados.innerHTML = '';
+                
                 querySnapshot.forEach((doc) => {
                     const v = doc.data();
+                    vendasCacheGlobal.push(v); // Salva no cache para o Extrato
+                    
                     if (v.metodoPagamento === 'Pendurado') {
-                        totalPendurado += v.total; contasClientes[v.cliente] = (contasClientes[v.cliente] || 0) + v.total;
-                    } else { totalRecebido += v.total; }
+                        totalPendurado += v.total; 
+                        contasClientes[v.cliente] = (contasClientes[v.cliente] || 0) + v.total;
+                    } else { 
+                        totalRecebido += v.total; 
+                    }
 
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td>${v.data}</td><td>${v.metodoPagamento}</td><td>${v.cliente}</td><td>R$ ${v.total.toFixed(2).replace('.', ',')}</td>`;
                     tbodyHistorico.appendChild(tr);
                 });
 
+                // Atualiza Totais
                 document.getElementById('rel-total-recebido').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
                 document.getElementById('rel-total-pendurado').textContent = `R$ ${totalPendurado.toFixed(2).replace('.', ',')}`;
 
-                for (const cliente in contasClientes) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${cliente}</td><td style="color: #e74c3c; font-weight: bold;">R$ ${contasClientes[cliente].toFixed(2).replace('.', ',')}</td>`;
-                    tbodyFiados.appendChild(tr);
+                // Tabela de Fiados
+                if (Object.keys(contasClientes).length === 0) {
+                    tbodyFiados.innerHTML = '<tr><td colspan="2">Nenhuma conta pendurada.</td></tr>';
+                } else {
+                    for (const cliente in contasClientes) {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${cliente}</td><td style="color: #e74c3c; font-weight: bold;">R$ ${contasClientes[cliente].toFixed(2).replace('.', ',')}</td>`;
+                        tbodyFiados.appendChild(tr);
+                    }
                 }
+
+                // Preenche o Select do Extrato apenas com quem tem vendas cadastradas
+                const clientesComVenda = [...new Set(vendasCacheGlobal.map(v => v.cliente))].sort();
+                selectExtrato.innerHTML = '<option value="">-- Escolha um Cliente --</option>';
+                clientesComVenda.forEach(nome => {
+                    const opt = document.createElement('option');
+                    opt.value = nome; opt.textContent = nome;
+                    selectExtrato.appendChild(opt);
+                });
+
+                // Esconde a área de extrato se estiver aberta
+                document.getElementById('resultado-extrato').classList.add('escondido');
+
             } catch(e) { console.error(e); }
+        };
+
+        // GERA O EXTRATO DETALHADO DO CLIENTE
+        window.gerarExtratoCliente = function() {
+            const clienteSelecionado = document.getElementById('rel-cliente-select').value;
+            const divResultado = document.getElementById('resultado-extrato');
+            
+            if(!clienteSelecionado) { alert("Por favor, selecione um cliente na lista."); return; }
+
+            let totalPago = 0;
+            let totalPendente = 0;
+            let itensConsumidos = [];
+
+            // Filtra as vendas apenas desse cliente
+            const vendasDoCliente = vendasCacheGlobal.filter(v => v.cliente === clienteSelecionado);
+
+            vendasDoCliente.forEach(v => {
+                if(v.metodoPagamento === 'Pendurado') {
+                    totalPendente += v.total;
+                } else {
+                    totalPago += v.total;
+                }
+
+                // Se a venda tiver os itens (novo formato), extrai os produtos
+                if(v.itens && v.itens.length > 0) {
+                    v.itens.forEach(item => {
+                        itensConsumidos.push({ data: v.data.split(' ')[0], nome: item.nome, preco: item.preco, status: v.metodoPagamento });
+                    });
+                } else {
+                    // Para vendas antigas que não tinham a lista de itens salva
+                    itensConsumidos.push({ data: v.data.split(' ')[0], nome: 'Venda Geral (S/ Detalhes)', preco: v.total, status: v.metodoPagamento });
+                }
+            });
+
+            // Monta o visual do Cupom/Extrato
+            let html = `<h4 style="margin-bottom: 10px; color: #2c3e50; font-size: 1.3rem;">Conta de: <span style="color:#3498db;">${clienteSelecionado}</span></h4>`;
+            html += `<p style="font-size: 1.1rem; margin-bottom: 5px;"><strong>Já Pagou (Din/Pix/Cartão):</strong> <span style="color:#27ae60;">R$ ${totalPago.toFixed(2).replace('.', ',')}</span></p>`;
+            html += `<p style="font-size: 1.1rem; margin-bottom: 20px;"><strong>Falta Pagar (Fiado):</strong> <span style="color:#e74c3c;">R$ ${totalPendente.toFixed(2).replace('.', ',')}</span></p>`;
+            
+            html += `<h4 style="margin-bottom: 10px; border-bottom: 2px solid #ecf0f1; padding-bottom: 5px;">Lista de Produtos Consumidos</h4>`;
+            
+            if(itensConsumidos.length === 0) {
+                html += `<p>Nenhum item encontrado.</p>`;
+            } else {
+                html += `<table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+                            <thead>
+                                <tr style="background: #f4f4f9;">
+                                    <th style="padding: 8px; border-bottom: 1px solid #ddd; text-align: left;">Data</th>
+                                    <th style="padding: 8px; border-bottom: 1px solid #ddd; text-align: left;">Item</th>
+                                    <th style="padding: 8px; border-bottom: 1px solid #ddd; text-align: left;">Valor</th>
+                                    <th style="padding: 8px; border-bottom: 1px solid #ddd; text-align: left;">Situação</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                
+                itensConsumidos.forEach(i => {
+                    let tagStatus = i.status === 'Pendurado' ? '<span style="color:white; background:#e74c3c; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">Fiado</span>' : '<span style="color:white; background:#27ae60; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem;">Pago</span>';
+                    html += `<tr>
+                                <td style="padding: 8px; border-bottom: 1px solid #eee;">${i.data}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #eee;">${i.nome}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #eee;">R$ ${i.preco.toFixed(2).replace('.', ',')}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #eee;">${tagStatus}</td>
+                             </tr>`;
+                });
+                html += `   </tbody>
+                         </table>`;
+            }
+
+            divResultado.innerHTML = html;
+            divResultado.classList.remove('escondido');
         };
 
     </script>
