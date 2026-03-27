@@ -7,12 +7,24 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: #f4f4f9; color: #333; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* Cabeçalho */
         header { background-color: #2c3e50; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .menu-botoes button { background-color: #34495e; color: white; border: 1px solid #ecf0f1; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 10px; }
+        .menu-botoes button { background-color: #34495e; color: white; border: 1px solid #ecf0f1; padding: 0.5rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 5px; }
         .menu-botoes button:hover { background-color: #ecf0f1; color: #2c3e50; }
+        .btn-sair { background-color: #c0392b !important; border-color: #e74c3c !important; margin-left: 20px !important;}
+        .btn-sair:hover { background-color: #e74c3c !important; color: white !important; }
+
         .container { display: flex; flex: 1; padding: 1rem; gap: 1rem; overflow: hidden; }
         .escondido { display: none !important; }
         
+        /* TELA DE LOGIN */
+        #tela-login { flex-direction: column; justify-content: center; align-items: center; background-color: #2c3e50; color: white; height: 100vh; display: flex; }
+        .caixa-login { background: white; padding: 3rem; border-radius: 8px; text-align: center; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .caixa-login h1 { margin-bottom: 1rem; color: #2c3e50; }
+        .btn-google { background-color: #4285F4; color: white; border: none; padding: 12px 24px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
+        .btn-google:hover { background-color: #3367D6; }
+
         /* Painéis Caixa */
         .painel-produtos { flex: 2; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 1rem; overflow-y: auto; }
@@ -54,10 +66,9 @@
         th { background-color: #f2f2f2; }
         .total-destaque { font-weight: bold; color: #e74c3c; font-size: 1.1rem; }
         
-        /* Formulários (Cliente e Produto) */
+        /* Formulários */
         .form-cadastro { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .form-cadastro input { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
-        .form-cadastro input[type="number"] { flex: 0.5; min-width: 100px; }
         .form-cadastro button { padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-acao { border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; margin-right: 5px; }
         .btn-editar { background-color: #f39c12; }
@@ -68,23 +79,34 @@
 </head>
 <body>
 
-    <header>
+    <div id="tela-login">
+        <div class="caixa-login">
+            <h1>Cantina do Retiro</h1>
+            <p>Acesso restrito a usuários autorizados.</p>
+            <button class="btn-google" onclick="window.loginGoogle()">
+                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                Entrar com Google
+            </button>
+        </div>
+    </div>
+
+    <header id="cabecalho-sistema" class="escondido">
         <h1>Cantina <span id="status-conexao"></span></h1>
         <div class="menu-botoes">
-            <span id="data-atual" style="margin-right: 20px;"></span>
+            <span id="data-atual" style="margin-right: 15px;"></span>
             <button onclick="window.alternarTela('caixa')">Caixa</button>
             <button onclick="window.alternarTela('produtos')">Produtos</button>
             <button onclick="window.alternarTela('clientes')">Clientes</button>
             <button onclick="window.alternarTela('relatorios')">Relatórios</button>
+            <button onclick="window.alternarTela('acessos')">Acessos</button>
+            <button class="btn-sair" onclick="window.logout()">Sair</button>
         </div>
     </header>
 
-    <main class="container" id="tela-caixa">
+    <main class="container escondido" id="tela-caixa">
         <section class="painel-produtos">
             <h2>Produtos</h2>
-            <div id="grade-produtos" class="grade">
-                <p style="color: #7f8c8d; grid-column: span 3;">Carregando produtos...</p>
-            </div>
+            <div id="grade-produtos" class="grade"></div>
         </section>
 
         <section class="painel-carrinho">
@@ -113,21 +135,17 @@
         <div class="tela-conteudo">
             <div style="max-width: 800px; margin: 0 auto; width: 100%;">
                 <h2>Gerenciar Produtos</h2>
-                <p style="margin-bottom: 2rem; color: #7f8c8d;">Adicione, edite valores ou remova itens da cantina.</p>
-                
                 <div class="form-cadastro">
                     <input type="hidden" id="produto-id">
-                    <input type="text" id="produto-nome" placeholder="Nome do produto (ex: Refrigerante)..." autocomplete="off">
+                    <input type="text" id="produto-nome" placeholder="Nome do produto..." autocomplete="off">
                     <input type="number" id="produto-preco" placeholder="Preço (ex: 5.50)" step="0.01" min="0">
                     <button onclick="window.salvarProduto()">Salvar Produto</button>
-                    <button onclick="window.limparFormProduto()" style="background-color: #95a5a6;">Cancelar / Limpar</button>
+                    <button onclick="window.limparFormProduto()" style="background-color: #95a5a6;">Cancelar</button>
                 </div>
-
                 <div class="secao-conteudo">
-                    <h3>Lista de Produtos</h3>
                     <table id="tabela-lista-produtos">
                         <thead><tr><th>Nome</th><th>Preço</th><th>Ações</th></tr></thead>
-                        <tbody><tr><td colspan="3">Carregando...</td></tr></tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -138,16 +156,14 @@
         <div class="tela-conteudo">
             <div style="max-width: 800px; margin: 0 auto; width: 100%;">
                 <h2>Gerenciar Clientes</h2>
-                <p style="margin-bottom: 2rem; color: #7f8c8d;">Cadastre os participantes para pesquisar no caixa.</p>
                 <div class="form-cadastro">
-                    <input type="text" id="novo-cliente-nome" placeholder="Digite o nome completo do cliente..." autocomplete="off">
+                    <input type="text" id="novo-cliente-nome" placeholder="Nome completo do cliente..." autocomplete="off">
                     <button onclick="window.cadastrarCliente()">Cadastrar Cliente</button>
                 </div>
                 <div class="secao-conteudo">
-                    <h3>Lista de Clientes Cadastrados</h3>
                     <table id="tabela-lista-clientes">
                         <thead><tr><th>Nome</th></tr></thead>
-                        <tbody><tr><td>Carregando...</td></tr></tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -157,35 +173,49 @@
     <main class="container escondido" id="tela-relatorios">
         <div class="tela-conteudo">
             <div style="max-width: 800px; margin: 0 auto; width: 100%;">
-                <h2>Relatório de Vendas (Nuvem)</h2>
+                <h2>Relatório de Vendas</h2>
                 <div class="secao-conteudo">
                     <h3>Resumo Financeiro</h3>
-                    <p>Total Recebido (Dinheiro, Pix, Cartão): <span id="rel-total-recebido" class="total-destaque">R$ 0,00</span></p>
-                    <p>Total Pendurado (A Receber): <span id="rel-total-pendurado" class="total-destaque" style="color:#e67e22;">R$ 0,00</span></p>
+                    <p>Recebido (Din/Pix/Cartão): <span id="rel-total-recebido" class="total-destaque">R$ 0,00</span></p>
+                    <p>Pendurado (A Receber): <span id="rel-total-pendurado" class="total-destaque" style="color:#e67e22;">R$ 0,00</span></p>
                 </div>
                 <div class="secao-conteudo">
-                    <h3>Contas Penduradas (Fiado) por Cliente</h3>
-                    <table id="tabela-fiados">
-                        <thead><tr><th>Nome do Cliente</th><th>Valor Total Devido</th></tr></thead>
+                    <h3>Fiados por Cliente</h3>
+                    <table id="tabela-fiados"><thead><tr><th>Cliente</th><th>Valor</th></tr></thead><tbody></tbody></table>
+                </div>
+                <div class="secao-conteudo">
+                    <h3>Histórico</h3>
+                    <table id="tabela-historico"><thead><tr><th>Data</th><th>Método</th><th>Cliente</th><th>Valor</th></tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <main class="container escondido" id="tela-acessos">
+        <div class="tela-conteudo">
+            <div style="max-width: 800px; margin: 0 auto; width: 100%;">
+                <h2>Gerenciar Acessos ao Sistema</h2>
+                <p style="margin-bottom: 2rem; color: #7f8c8d;">Apenas as contas Google cadastradas abaixo poderão acessar a Cantina.</p>
+                <div class="form-cadastro">
+                    <input type="email" id="novo-acesso-email" placeholder="Digite o e-mail do Gmail para autorizar..." autocomplete="off">
+                    <button onclick="window.autorizarEmail()">Autorizar E-mail</button>
+                </div>
+                <div class="secao-conteudo">
+                    <h3>Contas Autorizadas</h3>
+                    <table id="tabela-acessos">
+                        <thead><tr><th>E-mail Autorizado</th><th>Ações</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
-                <div class="secao-conteudo">
-                    <h3>Histórico de Vendas</h3>
-                    <table id="tabela-historico">
-                        <thead><tr><th>Data/Hora</th><th>Método</th><th>Cliente</th><th>Valor</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-                <button onclick="window.limparDadosVendas()" style="background-color:#e74c3c; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer; margin-top:20px;">Apagar Histórico de VENDAS no Banco</button>
             </div>
         </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        // Importando updateDoc agora
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, deleteDoc, doc, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // Importando a Autenticação
+        import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBRf7n_kUeobVTBzSdX4bE3Suuv9eUprmI",
@@ -198,398 +228,353 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        
+        // Configuração de Login
+        const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
+        const EMAIL_ADMIN_MASTER = "leovitorjipa@gmail.com";
+        let emailUsuarioLogado = "";
 
+        // Variáveis do Sistema
         let carrinho = [];
         let total = 0;
         let listaClientesCache = []; 
-        let listaProdutosCache = []; // Agora puxamos do Firebase
+        let listaProdutosCache = [];
 
-        // --- INICIALIZAÇÃO ---
-        window.iniciarSistema = function() {
-            document.getElementById('data-atual').textContent = new Date().toLocaleDateString('pt-BR');
-            
-            window.configurarPesquisaClientes();
-            window.buscarClientes();
-            window.buscarProdutos(); // Busca produtos do Firebase
+        // ==========================================
+        // SISTEMA DE AUTENTICAÇÃO
+        // ==========================================
+        
+        window.loginGoogle = async function() {
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Erro no login", error);
+                alert("Falha ao tentar fazer o login. Verifique se a Autenticação Google está ativada no Firebase.");
+            }
         };
 
-        // --- GESTÃO DE PRODUTOS ---
+        window.logout = async function() {
+            if(confirm("Deseja sair do sistema?")) {
+                await signOut(auth);
+                window.location.reload();
+            }
+        };
+
+        // Observador que verifica se alguém logou ou deslogou
+        onAuthStateChanged(auth, async (user) => {
+            const telaLogin = document.getElementById('tela-login');
+            const cabecalho = document.getElementById('cabecalho-sistema');
+            
+            if (user) {
+                const email = user.email.toLowerCase();
+                let temPermissao = false;
+
+                // 1. O admin master sempre tem acesso
+                if (email === EMAIL_ADMIN_MASTER) {
+                    temPermissao = true;
+                } else {
+                    // 2. Se não for o admin, verifica se o email está no banco de dados
+                    const docRef = doc(db, "usuarios_autorizados", email);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        temPermissao = true;
+                    }
+                }
+
+                if (temPermissao) {
+                    // LOGIN BEM SUCEDIDO
+                    emailUsuarioLogado = email;
+                    telaLogin.classList.add('escondido');
+                    cabecalho.classList.remove('escondido');
+                    document.getElementById('status-conexao').textContent = `(Logado como ${email})`;
+                    
+                    window.alternarTela('caixa'); // Inicia pelo caixa
+                    window.iniciarSistema(); // Carrega produtos e clientes
+                } else {
+                    // SEM PERMISSÃO
+                    alert(`Acesso Negado!\nO e-mail "${email}" não tem permissão para usar este sistema.`);
+                    await signOut(auth); // Desloga imediatamente
+                }
+            } else {
+                // DESLOGADO: Mostra tela inicial, esconde tudo
+                telaLogin.classList.remove('escondido');
+                cabecalho.classList.add('escondido');
+                ['caixa', 'produtos', 'clientes', 'relatorios', 'acessos'].forEach(t => {
+                    document.getElementById('tela-' + t).classList.add('escondido');
+                });
+            }
+        });
+
+        // ==========================================
+        // GESTÃO DE ACESSOS (PAINEL ADMIN)
+        // ==========================================
+
+        window.autorizarEmail = async function() {
+            const novoEmail = document.getElementById('novo-acesso-email').value.trim().toLowerCase();
+            if (!novoEmail || !novoEmail.includes("@")) {
+                alert("Digite um e-mail válido."); return;
+            }
+
+            document.getElementById('status-conexao').textContent = "(Salvando acesso...)";
+            try {
+                // Usa o próprio email como ID do documento no Firebase (facilita muito a busca)
+                await setDoc(doc(db, "usuarios_autorizados", novoEmail), { 
+                    email: novoEmail, 
+                    adicionadoPor: emailUsuarioLogado 
+                });
+                alert("E-mail autorizado com sucesso!");
+                document.getElementById('novo-acesso-email').value = "";
+                window.listarAcessos();
+            } catch (e) {
+                console.error("Erro ao autorizar", e);
+            } finally {
+                document.getElementById('status-conexao').textContent = `(Logado como ${emailUsuarioLogado})`;
+            }
+        };
+
+        window.listarAcessos = async function() {
+            const tbody = document.querySelector('#tabela-acessos tbody');
+            tbody.innerHTML = '<tr><td colspan="2">Carregando...</td></tr>';
+            
+            try {
+                const querySnapshot = await getDocs(collection(db, "usuarios_autorizados"));
+                tbody.innerHTML = '';
+                
+                // Adiciona a linha do Admin Master visualmente (mesmo que não esteja no banco)
+                const trAdmin = document.createElement('tr');
+                trAdmin.innerHTML = `<td><b>${EMAIL_ADMIN_MASTER} (Admin Master)</b></td><td><i>Irremovível</i></td>`;
+                tbody.appendChild(trAdmin);
+
+                querySnapshot.forEach((doc) => {
+                    const email = doc.id;
+                    if(email !== EMAIL_ADMIN_MASTER) { // Só pra não duplicar caso o admin acabe salvando o próprio nome
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${email}</td>
+                            <td><button class="btn-acao btn-excluir" onclick="window.removerAcesso('${email}')">Remover Acesso</button></td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
+                });
+            } catch(e) {
+                console.error(e);
+            }
+        };
+
+        window.removerAcesso = async function(emailRemover) {
+            if(confirm(`Tem certeza que deseja REVOGAR O ACESSO de ${emailRemover}?`)) {
+                try {
+                    await deleteDoc(doc(db, "usuarios_autorizados", emailRemover));
+                    window.listarAcessos();
+                } catch(e) {
+                    console.error("Erro ao remover", e);
+                }
+            }
+        };
+
+        // ==========================================
+        // RESTANTE DO SISTEMA (Caixa, Produtos, Clientes)
+        // ==========================================
+        
+        window.iniciarSistema = function() {
+            document.getElementById('data-atual').textContent = new Date().toLocaleDateString('pt-BR');
+            window.configurarPesquisaClientes();
+            window.buscarClientes();
+            window.buscarProdutos(); 
+        };
+
+        window.alternarTela = function(tela) {
+            ['caixa', 'produtos', 'clientes', 'relatorios', 'acessos'].forEach(t => {
+                document.getElementById('tela-' + t).classList.add('escondido');
+            });
+            document.getElementById('tela-' + tela).classList.remove('escondido');
+
+            if (tela === 'relatorios') window.gerarRelatorios();
+            if (tela === 'acessos') window.listarAcessos();
+        };
+
+        // PRODUTOS
         window.buscarProdutos = async function() {
-            document.getElementById('status-conexao').textContent = "(Atualizando produtos...)";
             try {
                 const q = query(collection(db, "produtos"), orderBy("nome"));
                 const querySnapshot = await getDocs(q);
-                
                 listaProdutosCache = [];
-                querySnapshot.forEach((doc) => {
-                    listaProdutosCache.push({ id: doc.id, nome: doc.data().nome, preco: parseFloat(doc.data().preco) });
-                });
-
+                querySnapshot.forEach((doc) => listaProdutosCache.push({ id: doc.id, nome: doc.data().nome, preco: parseFloat(doc.data().preco) }));
                 window.renderizarGradeProdutos();
                 window.renderizarTabelaProdutos();
-            } catch (e) {
-                console.error("Erro ao buscar produtos: ", e);
-            } finally {
-                document.getElementById('status-conexao').textContent = "";
-            }
+            } catch (e) { console.error(e); }
         };
 
         window.renderizarGradeProdutos = function() {
-            const gradeProdutos = document.getElementById('grade-produtos');
-            gradeProdutos.innerHTML = '';
-            
-            if (listaProdutosCache.length === 0) {
-                gradeProdutos.innerHTML = '<p style="color: #7f8c8d; grid-column: span 3;">Nenhum produto cadastrado. Vá na aba "Produtos" e adicione os itens.</p>';
-                return;
-            }
-
-            listaProdutosCache.forEach(produto => {
+            const grade = document.getElementById('grade-produtos');
+            grade.innerHTML = '';
+            if (listaProdutosCache.length === 0) { grade.innerHTML = '<p>Nenhum produto cadastrado.</p>'; return; }
+            listaProdutosCache.forEach(p => {
                 const btn = document.createElement('button');
                 btn.className = 'btn-produto';
-                btn.innerHTML = `${produto.nome} <span>R$ ${produto.preco.toFixed(2).replace('.', ',')}</span>`;
-                btn.onclick = () => window.adicionarAoCarrinho(produto);
-                gradeProdutos.appendChild(btn);
+                btn.innerHTML = `${p.nome} <span>R$ ${p.preco.toFixed(2).replace('.', ',')}</span>`;
+                btn.onclick = () => window.adicionarAoCarrinho(p);
+                grade.appendChild(btn);
             });
         };
 
         window.renderizarTabelaProdutos = function() {
             const tbody = document.querySelector('#tabela-lista-produtos tbody');
             tbody.innerHTML = '';
-
-            if (listaProdutosCache.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3">Nenhum produto cadastrado.</td></tr>';
-            } else {
-                listaProdutosCache.forEach(produto => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${produto.nome}</td>
-                        <td style="font-weight: bold; color: #27ae60;">R$ ${produto.preco.toFixed(2).replace('.', ',')}</td>
-                        <td>
-                            <button class="btn-acao btn-editar" onclick="window.editarProduto('${produto.id}')">Editar</button>
-                            <button class="btn-acao btn-excluir" onclick="window.excluirProduto('${produto.id}')">Excluir</button>
-                        </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
+            listaProdutosCache.forEach(p => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${p.nome}</td><td>R$ ${p.preco.toFixed(2).replace('.', ',')}</td>
+                <td>
+                    <button class="btn-acao btn-editar" onclick="window.editarProduto('${p.id}')">Editar</button>
+                    <button class="btn-acao btn-excluir" onclick="window.excluirProduto('${p.id}')">Excluir</button>
+                </td>`;
+                tbody.appendChild(tr);
+            });
         };
 
         window.salvarProduto = async function() {
             const id = document.getElementById('produto-id').value;
             const nome = document.getElementById('produto-nome').value.trim();
-            const precoStr = document.getElementById('produto-preco').value.replace(',', '.');
-            const preco = parseFloat(precoStr);
-
-            if (!nome || isNaN(preco) || preco < 0) {
-                alert("Por favor, preencha o NOME e um PREÇO válido (ex: 5.50).");
-                return;
-            }
-
-            document.getElementById('status-conexao').textContent = "(Salvando produto...)";
+            const preco = parseFloat(document.getElementById('produto-preco').value.replace(',', '.'));
+            if (!nome || isNaN(preco)) { alert("Preencha corretamente."); return; }
             try {
-                if (id) {
-                    // Atualiza um produto existente
-                    const ref = doc(db, "produtos", id);
-                    await updateDoc(ref, { nome: nome, preco: preco });
-                    alert("Produto atualizado com sucesso!");
-                } else {
-                    // Cria um novo produto
-                    await addDoc(collection(db, "produtos"), { nome: nome, preco: preco });
-                    alert("Novo produto cadastrado!");
-                }
-                
+                if (id) await updateDoc(doc(db, "produtos", id), { nome, preco });
+                else await addDoc(collection(db, "produtos"), { nome, preco });
                 window.limparFormProduto();
-                await window.buscarProdutos(); // Recarrega as listas
-            } catch (e) {
-                console.error("Erro ao salvar produto: ", e);
-                alert("Erro ao salvar. Verifique a conexão.");
-            } finally {
-                document.getElementById('status-conexao').textContent = "";
-            }
+                await window.buscarProdutos();
+            } catch(e) { console.error(e); }
         };
 
         window.editarProduto = function(id) {
-            const produto = listaProdutosCache.find(p => p.id === id);
-            if (produto) {
-                document.getElementById('produto-id').value = produto.id;
-                document.getElementById('produto-nome').value = produto.nome;
-                document.getElementById('produto-preco').value = produto.preco.toFixed(2);
-                document.getElementById('produto-nome').focus();
-            }
+            const p = listaProdutosCache.find(x => x.id === id);
+            if(p) { document.getElementById('produto-id').value = p.id; document.getElementById('produto-nome').value = p.nome; document.getElementById('produto-preco').value = p.preco.toFixed(2); }
         };
-
+        
         window.excluirProduto = async function(id) {
-            if (confirm("Tem certeza que deseja EXCLUIR este produto definitivamente?")) {
-                document.getElementById('status-conexao').textContent = "(Excluindo...)";
-                try {
-                    await deleteDoc(doc(db, "produtos", id));
-                    await window.buscarProdutos();
-                } catch(e) {
-                    console.error("Erro ao excluir: ", e);
-                } finally {
-                    document.getElementById('status-conexao').textContent = "";
-                }
-            }
+            if(confirm("Excluir produto?")) { await deleteDoc(doc(db, "produtos", id)); await window.buscarProdutos(); }
         };
+        
+        window.limparFormProduto = function() { document.getElementById('produto-id').value = ''; document.getElementById('produto-nome').value = ''; document.getElementById('produto-preco').value = ''; };
 
-        window.limparFormProduto = function() {
-            document.getElementById('produto-id').value = '';
-            document.getElementById('produto-nome').value = '';
-            document.getElementById('produto-preco').value = '';
-        };
-
-        // --- CARRINHO ---
-        window.adicionarAoCarrinho = function(produto) {
-            carrinho.push(produto);
-            window.atualizarCarrinho();
-        };
-
-        window.removerDoCarrinho = function(index) {
-            carrinho.splice(index, 1);
-            window.atualizarCarrinho();
-        };
-
+        // CAIXA / CARRINHO
+        window.adicionarAoCarrinho = function(produto) { carrinho.push(produto); window.atualizarCarrinho(); };
+        window.removerDoCarrinho = function(index) { carrinho.splice(index, 1); window.atualizarCarrinho(); };
         window.atualizarCarrinho = function() {
-            const listaCarrinho = document.getElementById('lista-carrinho');
-            const valorTotalSpan = document.getElementById('valor-total');
-            listaCarrinho.innerHTML = '';
-            total = 0;
-
-            if (carrinho.length === 0) {
-                listaCarrinho.innerHTML = '<li class="item-vazio">O carrinho está vazio.</li>';
-                valorTotalSpan.textContent = 'R$ 0,00';
-                return;
-            }
-
+            const lista = document.getElementById('lista-carrinho');
+            const totalSpan = document.getElementById('valor-total');
+            lista.innerHTML = ''; total = 0;
+            if (carrinho.length === 0) { lista.innerHTML = '<li class="item-vazio">Vazio.</li>'; totalSpan.textContent = 'R$ 0,00'; return; }
             carrinho.forEach((item, index) => {
                 total += item.preco;
                 const li = document.createElement('li');
-                li.style.display = 'flex'; li.style.justifyContent = 'space-between';
-                li.style.marginBottom = '8px'; li.style.borderBottom = '1px solid #eee'; li.style.paddingBottom = '8px';
+                li.style.display = 'flex'; li.style.justifyContent = 'space-between'; li.style.marginBottom = '8px'; li.style.borderBottom = '1px solid #eee'; li.style.paddingBottom = '8px';
                 li.innerHTML = `<span>${item.nome}</span> <div><span>R$ ${item.preco.toFixed(2).replace('.', ',')}</span> <button onclick="window.removerDoCarrinho(${index})" style="margin-left: 15px; color: #e74c3c; background: none; border: none; font-weight: bold; cursor: pointer;">X</button></div>`;
-                listaCarrinho.appendChild(li);
+                lista.appendChild(li);
             });
-            valorTotalSpan.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            totalSpan.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
         };
 
-        // --- SISTEMA DE BUSCA/AUTOCOMPLETE ---
-        window.configurarPesquisaClientes = function() {
-            const inputBusca = document.getElementById('busca-cliente');
-            const listaSugestoes = document.getElementById('lista-sugestoes');
-
-            inputBusca.addEventListener('input', function() {
-                const termo = this.value.toLowerCase().trim();
-                listaSugestoes.innerHTML = ''; 
-
-                if (!termo) {
-                    listaSugestoes.classList.add('escondido');
-                    return;
-                }
-
-                const filtrados = listaClientesCache.filter(c => c.nome.toLowerCase().includes(termo));
-                
-                if (filtrados.length > 0) {
-                    listaSugestoes.classList.remove('escondido');
-                    filtrados.forEach(c => {
-                        const li = document.createElement('li');
-                        li.textContent = c.nome;
-                        li.onclick = () => {
-                            inputBusca.value = c.nome;
-                            listaSugestoes.classList.add('escondido');
-                        };
-                        listaSugestoes.appendChild(li);
-                    });
-                } else {
-                    listaSugestoes.classList.add('escondido');
-                }
-            });
-
-            document.addEventListener('click', function(e) {
-                if (e.target !== inputBusca && e.target !== listaSugestoes) {
-                    listaSugestoes.classList.add('escondido');
-                }
-            });
-        };
-
-        // --- GESTÃO DE CLIENTES ---
-        window.buscarClientes = async function() {
-            try {
-                const q = query(collection(db, "clientes"), orderBy("nome"));
-                const querySnapshot = await getDocs(q);
-                
-                listaClientesCache = [];
-                querySnapshot.forEach((doc) => {
-                    listaClientesCache.push({ id: doc.id, nome: doc.data().nome });
-                });
-
-                window.atualizarTabelaClientes();
-            } catch (e) {
-                console.error(e);
-            }
-        };
-
-        window.atualizarTabelaClientes = function() {
-            const tbodyClientes = document.querySelector('#tabela-lista-clientes tbody');
-            tbodyClientes.innerHTML = '';
-
-            if (listaClientesCache.length === 0) {
-                tbodyClientes.innerHTML = '<tr><td>Nenhum cliente cadastrado ainda.</td></tr>';
-            } else {
-                listaClientesCache.forEach(cliente => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${cliente.nome}</td>`;
-                    tbodyClientes.appendChild(tr);
-                });
-            }
-        };
-
-        window.cadastrarCliente = async function() {
-            const inputNome = document.getElementById('novo-cliente-nome');
-            const nome = inputNome.value.trim();
-
-            if (!nome) { alert("Digite o nome."); return; }
-
-            document.getElementById('status-conexao').textContent = "(Salvando cliente...)";
-            try {
-                await addDoc(collection(db, "clientes"), { nome: nome });
-                inputNome.value = ''; 
-                alert("Cliente cadastrado!");
-                await window.buscarClientes(); 
-            } catch (e) {
-                console.error(e);
-            } finally {
-                document.getElementById('status-conexao').textContent = "";
-            }
-        };
-
-        // --- PAGAMENTO ---
         window.processarPagamento = async function(metodo) {
-            if (carrinho.length === 0) {
-                alert('O carrinho está vazio! Selecione os produtos primeiro.'); 
-                return;
-            }
-
+            if (carrinho.length === 0) { alert('Carrinho vazio.'); return; }
             const inputBusca = document.getElementById('busca-cliente');
             const nomeDigitado = inputBusca.value.trim();
-
-            if (!nomeDigitado) {
-                alert('ATENÇÃO: Você precisa pesquisar e informar o Cliente antes de finalizar a venda.');
-                inputBusca.focus();
-                return;
-            }
+            if (!nomeDigitado) { alert('Selecione o Cliente.'); inputBusca.focus(); return; }
 
             const clienteValido = listaClientesCache.find(c => c.nome.toLowerCase() === nomeDigitado.toLowerCase());
-            
-            if (!clienteValido) {
-                alert('CLIENTE NÃO ENCONTRADO! Clique na sugestão ou cadastre o cliente na aba "Clientes".');
-                inputBusca.focus();
-                return;
-            }
-
-            const clienteSelecionado = clienteValido.nome;
-
-            document.getElementById('status-conexao').textContent = "(Salvando venda...)";
+            if (!clienteValido) { alert('Cliente não encontrado.'); return; }
 
             const venda = {
                 data: new Date().toLocaleString('pt-BR'),
-                cliente: clienteSelecionado,
+                cliente: clienteValido.nome,
                 metodoPagamento: metodo,
-                total: total
+                total: total,
+                vendedor: emailUsuarioLogado // Salva quem fez a venda
             };
 
             try {
                 await addDoc(collection(db, "vendas"), venda);
-                alert(`Venda salva!\nCliente: ${clienteSelecionado}\nMétodo: ${metodo}\nTotal: R$ ${total.toFixed(2).replace('.', ',')}`);
-                
-                carrinho = [];
-                window.atualizarCarrinho();
-                inputBusca.value = ''; 
-            } catch (e) {
-                console.error(e);
-            } finally {
-                document.getElementById('status-conexao').textContent = "";
-            }
+                alert(`Venda salva! Método: ${metodo}`);
+                carrinho = []; window.atualizarCarrinho(); inputBusca.value = '';
+            } catch (e) { console.error(e); }
         };
 
-        // --- NAVEGAÇÃO E RELATÓRIOS ---
-        window.alternarTela = function(tela) {
-            document.getElementById('tela-caixa').classList.add('escondido');
-            document.getElementById('tela-produtos').classList.add('escondido');
-            document.getElementById('tela-clientes').classList.add('escondido');
-            document.getElementById('tela-relatorios').classList.add('escondido');
-
-            document.getElementById('tela-' + tela).classList.remove('escondido');
-
-            if (tela === 'relatorios') {
-                window.gerarRelatorios();
-            }
+        // CLIENTES
+        window.configurarPesquisaClientes = function() {
+            const inputBusca = document.getElementById('busca-cliente');
+            const listaSugestoes = document.getElementById('lista-sugestoes');
+            inputBusca.addEventListener('input', function() {
+                const termo = this.value.toLowerCase().trim();
+                listaSugestoes.innerHTML = ''; 
+                if (!termo) { listaSugestoes.classList.add('escondido'); return; }
+                const filtrados = listaClientesCache.filter(c => c.nome.toLowerCase().includes(termo));
+                if (filtrados.length > 0) {
+                    listaSugestoes.classList.remove('escondido');
+                    filtrados.forEach(c => {
+                        const li = document.createElement('li'); li.textContent = c.nome;
+                        li.onclick = () => { inputBusca.value = c.nome; listaSugestoes.classList.add('escondido'); };
+                        listaSugestoes.appendChild(li);
+                    });
+                } else { listaSugestoes.classList.add('escondido'); }
+            });
+            document.addEventListener('click', function(e) { if (e.target !== inputBusca && e.target !== listaSugestoes) listaSugestoes.classList.add('escondido'); });
         };
 
+        window.buscarClientes = async function() {
+            try {
+                const q = query(collection(db, "clientes"), orderBy("nome"));
+                const querySnapshot = await getDocs(q);
+                listaClientesCache = [];
+                querySnapshot.forEach((doc) => listaClientesCache.push({ id: doc.id, nome: doc.data().nome }));
+                const tbody = document.querySelector('#tabela-lista-clientes tbody');
+                tbody.innerHTML = '';
+                listaClientesCache.forEach(c => {
+                    const tr = document.createElement('tr'); tr.innerHTML = `<td>${c.nome}</td>`; tbody.appendChild(tr);
+                });
+            } catch (e) { console.error(e); }
+        };
+
+        window.cadastrarCliente = async function() {
+            const nome = document.getElementById('novo-cliente-nome').value.trim();
+            if (!nome) return;
+            try {
+                await addDoc(collection(db, "clientes"), { nome: nome });
+                document.getElementById('novo-cliente-nome').value = ''; 
+                await window.buscarClientes(); 
+            } catch (e) { console.error(e); }
+        };
+
+        // RELATÓRIOS
         window.gerarRelatorios = async function() {
-            document.getElementById('status-conexao').textContent = "(Buscando vendas...)";
-            
             let totalRecebido = 0; let totalPendurado = 0; const contasClientes = {};
             const tbodyHistorico = document.querySelector('#tabela-historico tbody');
             const tbodyFiados = document.querySelector('#tabela-fiados tbody');
-            
-            tbodyHistorico.innerHTML = '<tr><td colspan="4">Carregando...</td></tr>';
-            tbodyFiados.innerHTML = '<tr><td colspan="2">Carregando...</td></tr>';
+            tbodyHistorico.innerHTML = ''; tbodyFiados.innerHTML = '';
 
             try {
                 const querySnapshot = await getDocs(collection(db, "vendas"));
-                tbodyHistorico.innerHTML = ''; tbodyFiados.innerHTML = '';
-                
                 querySnapshot.forEach((doc) => {
-                    const venda = doc.data();
-                    if (venda.metodoPagamento === 'Pendurado') {
-                        totalPendurado += venda.total;
-                        contasClientes[venda.cliente] = (contasClientes[venda.cliente] || 0) + venda.total;
-                    } else {
-                        totalRecebido += venda.total;
-                    }
+                    const v = doc.data();
+                    if (v.metodoPagamento === 'Pendurado') {
+                        totalPendurado += v.total; contasClientes[v.cliente] = (contasClientes[v.cliente] || 0) + v.total;
+                    } else { totalRecebido += v.total; }
 
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${venda.data}</td><td>${venda.metodoPagamento}</td><td>${venda.cliente}</td><td>R$ ${venda.total.toFixed(2).replace('.', ',')}</td>`;
+                    tr.innerHTML = `<td>${v.data}</td><td>${v.metodoPagamento}</td><td>${v.cliente}</td><td>R$ ${v.total.toFixed(2).replace('.', ',')}</td>`;
                     tbodyHistorico.appendChild(tr);
                 });
 
                 document.getElementById('rel-total-recebido').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
                 document.getElementById('rel-total-pendurado').textContent = `R$ ${totalPendurado.toFixed(2).replace('.', ',')}`;
 
-                if (Object.keys(contasClientes).length === 0) {
-                    tbodyFiados.innerHTML = '<tr><td colspan="2">Nenhuma conta pendurada.</td></tr>';
-                } else {
-                    for (const cliente in contasClientes) {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${cliente}</td><td style="color: #e74c3c; font-weight: bold;">R$ ${contasClientes[cliente].toFixed(2).replace('.', ',')}</td>`;
-                        tbodyFiados.appendChild(tr);
-                    }
+                for (const cliente in contasClientes) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td>${cliente}</td><td style="color: #e74c3c; font-weight: bold;">R$ ${contasClientes[cliente].toFixed(2).replace('.', ',')}</td>`;
+                    tbodyFiados.appendChild(tr);
                 }
-            } catch(e) {
-                console.error(e);
-                tbodyHistorico.innerHTML = '<tr><td colspan="4">Erro ao carregar relatórios.</td></tr>';
-            } finally {
-                document.getElementById('status-conexao').textContent = "";
-            }
+            } catch(e) { console.error(e); }
         };
 
-        window.limparDadosVendas = async function() {
-            if(confirm("ATENÇÃO: Isso apagará o histórico de VENDAS do banco de dados (os clientes e produtos NÃO serão apagados). Tem certeza?")) {
-                document.getElementById('status-conexao').textContent = "(Apagando vendas...)";
-                try {
-                    const querySnapshot = await getDocs(collection(db, "vendas"));
-                    querySnapshot.forEach(async (documento) => {
-                        await deleteDoc(doc(db, "vendas", documento.id));
-                    });
-                    alert("Comandos de exclusão enviados.");
-                    setTimeout(() => window.gerarRelatorios(), 2000); 
-                } catch(e) { console.error(e); } 
-                finally { document.getElementById('status-conexao').textContent = ""; }
-            }
-        };
-
-        // Inicia o Layout
-        window.iniciarSistema();
     </script>
 </body>
 </html>
