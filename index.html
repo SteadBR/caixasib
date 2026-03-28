@@ -193,6 +193,10 @@
                     <button onclick="window.limparFormCliente()" style="background-color: #95a5a6;">Cancelar</button>
                 </div>
                 <div class="secao-conteudo">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="margin: 0; border: none;">Lista de Clientes</h3>
+                        <input type="text" id="busca-cliente-painel" placeholder="🔍 Filtrar por nome..." style="width: 250px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                    </div>
                     <table id="tabela-lista-clientes">
                         <thead><tr><th>Nome</th><th>Crédito (Troco)</th><th>Ações</th></tr></thead>
                         <tbody></tbody>
@@ -419,8 +423,9 @@
         
         window.iniciarSistema = function() {
             document.getElementById('data-atual').textContent = new Date().toLocaleDateString('pt-BR');
-            window.configurarPesquisaClientes();
-            window.configurarPesquisaProdutos(); // Nova função ativada
+            window.configurarPesquisaClientesAutocomplete();
+            window.configurarPesquisaProdutos(); 
+            window.configurarPesquisaClientesPainel(); // Nova função ativada
             window.buscarClientes();
             window.buscarProdutos(); 
         };
@@ -579,7 +584,7 @@
             }
         };
 
-        window.configurarPesquisaClientes = function() {
+        window.configurarPesquisaClientesAutocomplete = function() {
             const inputBusca = document.getElementById('busca-cliente');
             const listaSugestoes = document.getElementById('lista-sugestoes');
             const divInfo = document.getElementById('info-credito-cliente');
@@ -606,30 +611,57 @@
             document.addEventListener('click', function(e) { if (e.target !== inputBusca && e.target !== listaSugestoes) listaSugestoes.classList.add('escondido'); });
         };
 
+        // NOVA FUNÇÃO: Pesquisa na tabela de gerenciamento de clientes
+        window.configurarPesquisaClientesPainel = function() {
+            document.getElementById('busca-cliente-painel').addEventListener('input', function() {
+                const termo = this.value.toLowerCase().trim();
+                if (!termo) {
+                    window.renderizarTabelaClientes(listaClientesCache);
+                    return;
+                }
+                const filtrados = listaClientesCache.filter(c => c.nome.toLowerCase().includes(termo));
+                window.renderizarTabelaClientes(filtrados);
+            });
+        };
+
+        // Função separada para desenhar a tabela, permitindo a pesquisa funcionar sem recarregar o banco
+        window.renderizarTabelaClientes = function(listaParaRenderizar) {
+            const tbody = document.querySelector('#tabela-lista-clientes tbody');
+            tbody.innerHTML = '';
+            
+            if(listaParaRenderizar.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3">Nenhum cliente encontrado.</td></tr>';
+                return;
+            }
+
+            listaParaRenderizar.forEach(cliente => {
+                const tr = document.createElement('tr'); 
+                tr.innerHTML = `
+                    <td>${cliente.nome}</td>
+                    <td style="color: ${cliente.credito > 0 ? '#27ae60' : '#333'}; font-weight: bold;">R$ ${cliente.credito.toFixed(2).replace('.', ',')}</td>
+                    <td>
+                        <button class="btn-acao btn-credito" onclick="window.gerenciarCredito('${cliente.id}')">Crédito</button>
+                        <button class="btn-acao btn-editar" onclick="window.editarCliente('${cliente.id}')">Editar</button>
+                        <button class="btn-acao btn-excluir" onclick="window.excluirCliente('${cliente.id}')">Excluir</button>
+                    </td>`; 
+                tbody.appendChild(tr);
+            });
+        };
+
         window.buscarClientes = async function() {
             try {
                 const q = query(collection(db, "clientes"), orderBy("nome"));
                 const querySnapshot = await getDocs(q);
                 listaClientesCache = [];
-                const tbody = document.querySelector('#tabela-lista-clientes tbody');
-                tbody.innerHTML = '';
                 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
                     const cliente = { id: doc.id, nome: data.nome, credito: data.credito || 0 };
                     listaClientesCache.push(cliente);
-                    
-                    const tr = document.createElement('tr'); 
-                    tr.innerHTML = `
-                        <td>${cliente.nome}</td>
-                        <td style="color: ${cliente.credito > 0 ? '#27ae60' : '#333'}; font-weight: bold;">R$ ${cliente.credito.toFixed(2).replace('.', ',')}</td>
-                        <td>
-                            <button class="btn-acao btn-credito" onclick="window.gerenciarCredito('${cliente.id}')">Crédito</button>
-                            <button class="btn-acao btn-editar" onclick="window.editarCliente('${cliente.id}')">Editar</button>
-                            <button class="btn-acao btn-excluir" onclick="window.excluirCliente('${cliente.id}')">Excluir</button>
-                        </td>`; 
-                    tbody.appendChild(tr);
                 });
+                
+                // Desenha a tabela com todos os clientes ao carregar
+                window.renderizarTabelaClientes(listaClientesCache);
             } catch (e) { console.error(e); }
         };
 
@@ -644,6 +676,7 @@
                     await addDoc(collection(db, "clientes"), { nome: nome, credito: 0 }); // Inicia com 0 crédito
                 }
                 window.limparFormCliente(); 
+                document.getElementById('busca-cliente-painel').value = ''; // Limpa a barra de pesquisa ao salvar
                 await window.buscarClientes(); 
             } catch (e) { console.error(e); }
         };
@@ -670,6 +703,7 @@
             try {
                 await updateDoc(doc(db, "clientes", id), { credito: novoCredito });
                 alert(`Sucesso! O novo saldo de ${c.nome} é: R$ ${novoCredito.toFixed(2).replace('.', ',')}`);
+                document.getElementById('busca-cliente-painel').value = ''; // Limpa a busca para atualizar a tabela geral
                 await window.buscarClientes(); 
             } catch(e) { console.error(e); alert("Erro ao atualizar crédito."); }
         };
@@ -685,6 +719,7 @@
         window.excluirCliente = async function(id) { 
             if(confirm("Tem certeza que deseja excluir este cliente?\n\nAs contas pendentes dele NÃO serão apagadas, mas o nome desaparecerá das buscas do caixa.")) { 
                 await deleteDoc(doc(db, "clientes", id)); 
+                document.getElementById('busca-cliente-painel').value = '';
                 await window.buscarClientes(); 
             } 
         };
