@@ -16,7 +16,6 @@
             display: flex; 
             flex-direction: column; 
             height: 100vh; 
-            /* O user-select: none foi removido daqui e passado para o JavaScript condicional */
         }
 
         /* Garante que, mesmo que a proteção ative no body, os campos de texto funcionem */
@@ -59,7 +58,7 @@
         /* Autocomplete Cliente */
         .area-cliente { background-color: #ecf0f1; padding: 10px; border-radius: 6px; margin-bottom: 10px; position: relative; }
         .area-cliente label { font-weight: bold; display: block; margin-bottom: 5px; color: #2c3e50; }
-        #busca-cliente { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #bdc3c7; font-size: 1rem; }
+        #busca-cliente, #busca-produto-caixa { width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #bdc3c7; font-size: 1rem; }
         #lista-sugestoes { position: absolute; top: 100%; left: 10px; right: 10px; background: white; border: 1px solid #bdc3c7; border-top: none; max-height: 150px; overflow-y: auto; list-style: none; z-index: 100; border-radius: 0 0 6px 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         #lista-sugestoes li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; font-weight: 500; }
         #lista-sugestoes li:hover { background-color: #3498db; color: white; }
@@ -93,6 +92,7 @@
         .form-cadastro input { flex: 1; min-width: 200px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
         .form-cadastro button { padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         .btn-acao { border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; margin-right: 5px; }
+        .btn-credito { background-color: #3498db; }
         .btn-editar { background-color: #f39c12; }
         .btn-excluir { background-color: #e74c3c; }
         
@@ -131,7 +131,10 @@
 
     <main class="container escondido" id="tela-caixa">
         <section class="painel-produtos">
-            <h2>Produtos</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>Produtos</h2>
+                <input type="text" id="busca-produto-caixa" placeholder="🔍 Buscar produto..." style="width: 250px; padding: 8px;">
+            </div>
             <div id="grade-produtos" class="grade"></div>
         </section>
 
@@ -141,6 +144,7 @@
                 <label for="busca-cliente">Cliente (Pesquise pelo nome):</label>
                 <input type="text" id="busca-cliente" placeholder="Digite para buscar..." autocomplete="off">
                 <ul id="lista-sugestoes" class="escondido"></ul>
+                <div id="info-credito-cliente" style="margin-top: 8px;"></div>
             </div>
             <ul id="lista-carrinho">
                 <li class="item-vazio">O carrinho está vazio.</li>
@@ -190,7 +194,7 @@
                 </div>
                 <div class="secao-conteudo">
                     <table id="tabela-lista-clientes">
-                        <thead><tr><th>Nome</th><th>Ações</th></tr></thead>
+                        <thead><tr><th>Nome</th><th>Crédito (Troco)</th><th>Ações</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -296,23 +300,18 @@
         // FUNÇÃO ANTI-CÓPIA INTELIGENTE
         // ==========================================
         window.ativarProtecaoAntiCopia = function() {
-            // Aplica a trava de seleção de texto via JavaScript
             document.body.style.webkitUserSelect = 'none';
             document.body.style.msUserSelect = 'none';
             document.body.style.userSelect = 'none';
             
-            // Trava o clique direito
-            document.addEventListener('contextmenu', function(event) {
-                event.preventDefault();
-            });
+            document.addEventListener('contextmenu', function(event) { event.preventDefault(); });
 
-            // Trava os atalhos de desenvolvedor
             document.addEventListener('keydown', function(e) {
-                if (e.keyCode === 123) { e.preventDefault(); return false; } // F12
-                if (e.ctrlKey && e.keyCode === 85) { e.preventDefault(); return false; } // Ctrl+U
-                if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) { e.preventDefault(); return false; } // Inspecionar
-                if (e.ctrlKey && e.keyCode === 83) { e.preventDefault(); return false; } // Ctrl+S
-                if (e.ctrlKey && e.keyCode === 80) { e.preventDefault(); return false; } // Ctrl+P
+                if (e.keyCode === 123) { e.preventDefault(); return false; } 
+                if (e.ctrlKey && e.keyCode === 85) { e.preventDefault(); return false; } 
+                if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) { e.preventDefault(); return false; } 
+                if (e.ctrlKey && e.keyCode === 83) { e.preventDefault(); return false; } 
+                if (e.ctrlKey && e.keyCode === 80) { e.preventDefault(); return false; } 
             });
         };
 
@@ -348,7 +347,6 @@
                     telaLogin.classList.add('escondido');
                     cabecalho.classList.remove('escondido');
                     
-                    // LÓGICA DO ANTI-CÓPIA ATIVADA AQUI
                     if (email !== EMAIL_ADMIN_MASTER) {
                         window.ativarProtecaoAntiCopia();
                         document.getElementById('status-conexao').textContent = `(Caixa - ${email})`;
@@ -422,6 +420,7 @@
         window.iniciarSistema = function() {
             document.getElementById('data-atual').textContent = new Date().toLocaleDateString('pt-BR');
             window.configurarPesquisaClientes();
+            window.configurarPesquisaProdutos(); // Nova função ativada
             window.buscarClientes();
             window.buscarProdutos(); 
         };
@@ -433,7 +432,32 @@
             if (tela === 'acessos') window.listarAcessos();
         };
 
+        // ==========================================
         // PRODUTOS
+        // ==========================================
+        window.configurarPesquisaProdutos = function() {
+            document.getElementById('busca-produto-caixa').addEventListener('input', function() {
+                const termo = this.value.toLowerCase().trim();
+                const grade = document.getElementById('grade-produtos');
+                grade.innerHTML = '';
+                
+                const filtrados = listaProdutosCache.filter(p => p.nome.toLowerCase().includes(termo));
+                
+                if (filtrados.length === 0) { 
+                    grade.innerHTML = '<p>Nenhum produto encontrado.</p>'; 
+                    return; 
+                }
+                
+                filtrados.forEach(p => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-produto';
+                    btn.innerHTML = `${p.nome} <span>R$ ${p.preco.toFixed(2).replace('.', ',')}</span>`;
+                    btn.onclick = () => window.adicionarAoCarrinho(p);
+                    grade.appendChild(btn);
+                });
+            });
+        };
+
         window.buscarProdutos = async function() {
             try {
                 const q = query(collection(db, "produtos"), orderBy("nome"));
@@ -493,7 +517,9 @@
         window.excluirProduto = async function(id) { if(confirm("Excluir produto?")) { await deleteDoc(doc(db, "produtos", id)); await window.buscarProdutos(); } };
         window.limparFormProduto = function() { document.getElementById('produto-id').value = ''; document.getElementById('produto-nome').value = ''; document.getElementById('produto-preco').value = ''; };
 
+        // ==========================================
         // CAIXA / CARRINHO
+        // ==========================================
         window.adicionarAoCarrinho = function(produto) { carrinho.push(produto); window.atualizarCarrinho(); };
         window.removerDoCarrinho = function(index) { carrinho.splice(index, 1); window.atualizarCarrinho(); };
         window.atualizarCarrinho = function() {
@@ -534,15 +560,32 @@
             try {
                 await addDoc(collection(db, "vendas"), venda);
                 alert(`Venda salva! Método: ${metodo}`);
-                carrinho = []; window.atualizarCarrinho(); inputBusca.value = '';
+                carrinho = []; 
+                window.atualizarCarrinho(); 
+                inputBusca.value = '';
+                document.getElementById('info-credito-cliente').innerHTML = ''; // Limpa aviso de crédito
             } catch (e) { console.error(e); }
         };
 
-        // CLIENTES
+        // ==========================================
+        // CLIENTES & CRÉDITO
+        // ==========================================
+        window.mostrarCreditoNoCaixa = function(credito) {
+            const divInfo = document.getElementById('info-credito-cliente');
+            if(credito > 0) {
+                divInfo.innerHTML = `<span style="color: #e67e22; background: #fdf2e9; padding: 4px 8px; border-radius: 4px; border: 1px solid #f5c6cb;">⚠️ O cliente possui R$ ${credito.toFixed(2).replace('.', ',')} de crédito (troco) retido na casa.</span>`;
+            } else {
+                divInfo.innerHTML = '';
+            }
+        };
+
         window.configurarPesquisaClientes = function() {
             const inputBusca = document.getElementById('busca-cliente');
             const listaSugestoes = document.getElementById('lista-sugestoes');
+            const divInfo = document.getElementById('info-credito-cliente');
+
             inputBusca.addEventListener('input', function() {
+                divInfo.innerHTML = ''; // Limpa o aviso de crédito se o usuário começar a apagar o nome
                 const termo = this.value.toLowerCase().trim();
                 listaSugestoes.innerHTML = ''; 
                 if (!termo) { listaSugestoes.classList.add('escondido'); return; }
@@ -551,7 +594,11 @@
                     listaSugestoes.classList.remove('escondido');
                     filtrados.forEach(c => {
                         const li = document.createElement('li'); li.textContent = c.nome;
-                        li.onclick = () => { inputBusca.value = c.nome; listaSugestoes.classList.add('escondido'); };
+                        li.onclick = () => { 
+                            inputBusca.value = c.nome; 
+                            listaSugestoes.classList.add('escondido');
+                            window.mostrarCreditoNoCaixa(c.credito); // Mostra se tem troco
+                        };
                         listaSugestoes.appendChild(li);
                     });
                 } else { listaSugestoes.classList.add('escondido'); }
@@ -564,16 +611,22 @@
                 const q = query(collection(db, "clientes"), orderBy("nome"));
                 const querySnapshot = await getDocs(q);
                 listaClientesCache = [];
-                querySnapshot.forEach((doc) => listaClientesCache.push({ id: doc.id, nome: doc.data().nome }));
                 const tbody = document.querySelector('#tabela-lista-clientes tbody');
                 tbody.innerHTML = '';
-                listaClientesCache.forEach(c => {
+                
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const cliente = { id: doc.id, nome: data.nome, credito: data.credito || 0 };
+                    listaClientesCache.push(cliente);
+                    
                     const tr = document.createElement('tr'); 
                     tr.innerHTML = `
-                        <td>${c.nome}</td>
+                        <td>${cliente.nome}</td>
+                        <td style="color: ${cliente.credito > 0 ? '#27ae60' : '#333'}; font-weight: bold;">R$ ${cliente.credito.toFixed(2).replace('.', ',')}</td>
                         <td>
-                            <button class="btn-acao btn-editar" onclick="window.editarCliente('${c.id}')">Editar</button>
-                            <button class="btn-acao btn-excluir" onclick="window.excluirCliente('${c.id}')">Excluir</button>
+                            <button class="btn-acao btn-credito" onclick="window.gerenciarCredito('${cliente.id}')">Crédito</button>
+                            <button class="btn-acao btn-editar" onclick="window.editarCliente('${cliente.id}')">Editar</button>
+                            <button class="btn-acao btn-excluir" onclick="window.excluirCliente('${cliente.id}')">Excluir</button>
                         </td>`; 
                     tbody.appendChild(tr);
                 });
@@ -588,11 +641,37 @@
                 if (id) {
                     await updateDoc(doc(db, "clientes", id), { nome: nome });
                 } else {
-                    await addDoc(collection(db, "clientes"), { nome: nome });
+                    await addDoc(collection(db, "clientes"), { nome: nome, credito: 0 }); // Inicia com 0 crédito
                 }
                 window.limparFormCliente(); 
                 await window.buscarClientes(); 
             } catch (e) { console.error(e); }
+        };
+
+        window.gerenciarCredito = async function(id) {
+            const c = listaClientesCache.find(x => x.id === id);
+            if(!c) return;
+            
+            const valorStr = prompt(`--- GERENCIAR TROCO / CRÉDITO ---\nCliente: ${c.nome}\nSaldo Atual: R$ ${c.credito.toFixed(2).replace('.', ',')}\n\n-> Para ADICIONAR troco que ficou retido, digite o valor (Ex: 5.50)\n-> Para DESCONTAR quando devolver o dinheiro ou abater compra, use o sinal de menos (Ex: -2.00)\n\nDigite o valor:`);
+            
+            if(valorStr === null || valorStr.trim() === '') return;
+            
+            const valorModificacao = parseFloat(valorStr.replace(',', '.'));
+            if(isNaN(valorModificacao)) { alert("Valor inválido. Use pontos ou vírgulas apenas para os centavos."); return; }
+            
+            const novoCredito = c.credito + valorModificacao;
+            
+            if(novoCredito < 0) {
+                if(!confirm(`Atenção: A subtração vai deixar o cliente com saldo negativo (R$ ${novoCredito.toFixed(2).replace('.', ',')}). Deseja continuar?`)){
+                    return;
+                }
+            }
+
+            try {
+                await updateDoc(doc(db, "clientes", id), { credito: novoCredito });
+                alert(`Sucesso! O novo saldo de ${c.nome} é: R$ ${novoCredito.toFixed(2).replace('.', ',')}`);
+                await window.buscarClientes(); 
+            } catch(e) { console.error(e); alert("Erro ao atualizar crédito."); }
         };
 
         window.editarCliente = function(id) {
@@ -615,12 +694,14 @@
             document.getElementById('cliente-nome').value = ''; 
         };
 
+        // ==========================================
         // RELATÓRIOS E EXTRATO DE CLIENTES
+        // ==========================================
         window.gerarRelatorios = async function() {
             let totalRecebido = 0; 
             let totalPendurado = 0; 
             const contasClientes = {};
-            const totalGastoPorCliente = {}; // Variável para o Ranking
+            const totalGastoPorCliente = {}; 
 
             const tbodyHistorico = document.querySelector('#tabela-historico tbody');
             const tbodyFiados = document.querySelector('#tabela-fiados tbody');
@@ -642,7 +723,6 @@
                     const v = doc.data();
                     vendasCacheGlobal.push(v);
                     
-                    // Soma o total que esse cliente já consumiu (pago ou não)
                     totalGastoPorCliente[v.cliente] = (totalGastoPorCliente[v.cliente] || 0) + v.total;
                     
                     if (v.metodoPagamento === 'Pendurado') {
@@ -660,7 +740,6 @@
                 document.getElementById('rel-total-recebido').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
                 document.getElementById('rel-total-pendurado').textContent = `R$ ${totalPendurado.toFixed(2).replace('.', ',')}`;
 
-                // --- GERAÇÃO DA TABELA DE FIADOS ---
                 if (Object.keys(contasClientes).length === 0) {
                     tbodyFiados.innerHTML = '<tr><td colspan="2">Nenhuma conta pendurada.</td></tr>';
                 } else {
@@ -671,10 +750,7 @@
                     }
                 }
 
-                // --- GERAÇÃO DO RANKING TOP 5 ---
                 tbodyRanking.innerHTML = '';
-                
-                // Converte o objeto de gastos em um array, ordena do maior pro menor e corta os 5 primeiros
                 const rankingTop5 = Object.keys(totalGastoPorCliente)
                     .map(cliente => ({ nome: cliente, total: totalGastoPorCliente[cliente] }))
                     .sort((a, b) => b.total - a.total)
@@ -699,7 +775,6 @@
                     });
                 }
 
-                // --- PREENCHE O SELECT DE EXTRATOS ---
                 const clientesComVenda = [...new Set(vendasCacheGlobal.map(v => v.cliente))].sort();
                 selectExtrato.innerHTML = '<option value="">-- Escolha um Cliente --</option>';
                 clientesComVenda.forEach(nome => {
