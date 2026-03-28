@@ -33,7 +33,9 @@
         /* Cabeçalho com Logo */
         header { background-color: #2c3e50; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         .logo-header { display: flex; align-items: center; gap: 15px; }
-        .img-logo { height: 45px; border-radius: 50%; background-color: white; padding: 2px; }
+        
+        /* ATUALIZAÇÃO LOGO CABEÇALHO: Removido círculo, fundo branco e padding */
+        .img-logo { height: 45px; }
         
         .menu-botoes button { background-color: #34495e; color: white; border: 1px solid #ecf0f1; padding: 0.5rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 5px; }
         .menu-botoes button:hover { background-color: #ecf0f1; color: #2c3e50; }
@@ -46,7 +48,10 @@
         /* TELA DE LOGIN COM LOGO */
         #tela-login { flex-direction: column; justify-content: center; align-items: center; background-color: #2c3e50; color: white; height: 100vh; display: flex; }
         .caixa-login { background: white; padding: 3rem; border-radius: 8px; text-align: center; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .caixa-login img { height: 100px; margin-bottom: 1rem; border-radius: 50%; border: 3px solid #3498db; padding: 5px; }
+        
+        /* ATUALIZAÇÃO LOGO LOGIN: Removido círculo, borda azul e padding */
+        .caixa-login img { height: 100px; margin-bottom: 1rem; }
+        
         .caixa-login h1 { margin-bottom: 1rem; color: #2c3e50; }
         .btn-google { background-color: #4285F4; color: white; border: none; padding: 12px 24px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .btn-google:hover { background-color: #3367D6; }
@@ -107,7 +112,7 @@
 
     <div id="tela-login">
         <div class="caixa-login">
-            <img src="https://i.imgur.com/pu8hcXt.png" alt="Logo Cantina SIB">
+            <img src="https://i.imgur.com/j6J7J5v.png" alt="Logo Cantina SIB">
             <h1>Cantina do Retiro</h1>
             <p>Acesso restrito a usuários autorizados.</p>
             <button class="btn-google" onclick="window.loginGoogle()">
@@ -119,7 +124,7 @@
 
     <header id="cabecalho-sistema" class="escondido">
         <div class="logo-header">
-            <img src="https://i.imgur.com/pu8hcXt.png" alt="Logo" class="img-logo">
+            <img src="https://i.imgur.com/j6J7J5v.png" alt="Logo" class="img-logo">
             <h1>Cantina <span id="status-conexao"></span></h1>
         </div>
         <div class="menu-botoes">
