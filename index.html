@@ -33,8 +33,6 @@
         /* Cabeçalho com Logo */
         header { background-color: #2c3e50; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         .logo-header { display: flex; align-items: center; gap: 15px; }
-        
-        /* ATUALIZAÇÃO LOGO CABEÇALHO: Removido círculo, fundo branco e padding */
         .img-logo { height: 45px; }
         
         .menu-botoes button { background-color: #34495e; color: white; border: 1px solid #ecf0f1; padding: 0.5rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 5px; }
@@ -48,10 +46,7 @@
         /* TELA DE LOGIN COM LOGO */
         #tela-login { flex-direction: column; justify-content: center; align-items: center; background-color: #2c3e50; color: white; height: 100vh; display: flex; }
         .caixa-login { background: white; padding: 3rem; border-radius: 8px; text-align: center; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        
-        /* ATUALIZAÇÃO LOGO LOGIN: Removido círculo, borda azul e padding */
         .caixa-login img { height: 100px; margin-bottom: 1rem; }
-        
         .caixa-login h1 { margin-bottom: 1rem; color: #2c3e50; }
         .btn-google { background-color: #4285F4; color: white; border: none; padding: 12px 24px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .btn-google:hover { background-color: #3367D6; }
@@ -192,12 +187,14 @@
             <div style="max-width: 800px; margin: 0 auto; width: 100%;">
                 <h2>Gerenciar Clientes</h2>
                 <div class="form-cadastro">
-                    <input type="text" id="novo-cliente-nome" placeholder="Nome completo do cliente..." autocomplete="off">
-                    <button onclick="window.cadastrarCliente()">Cadastrar Cliente</button>
+                    <input type="hidden" id="cliente-id">
+                    <input type="text" id="cliente-nome" placeholder="Nome completo do cliente..." autocomplete="off">
+                    <button onclick="window.salvarCliente()">Salvar Cliente</button>
+                    <button onclick="window.limparFormCliente()" style="background-color: #95a5a6;">Cancelar</button>
                 </div>
                 <div class="secao-conteudo">
                     <table id="tabela-lista-clientes">
-                        <thead><tr><th>Nome</th></tr></thead>
+                        <thead><tr><th>Nome</th><th>Ações</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -239,24 +236,6 @@
                 <div class="secao-conteudo">
                     <h3>Histórico Bruto de Vendas</h3>
                     <table id="tabela-historico"><thead><tr><th>Data/Hora</th><th>Método</th><th>Cliente</th><th>Valor Venda</th></tr></thead><tbody></tbody></table>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <main class="container escondido" id="tela-acessos">
-        <div class="tela-conteudo">
-            <div style="max-width: 800px; margin: 0 auto; width: 100%;">
-                <h2>Gerenciar Acessos ao Sistema</h2>
-                <div class="form-cadastro">
-                    <input type="email" id="novo-acesso-email" placeholder="Digite o e-mail do Gmail para autorizar..." autocomplete="off">
-                    <button onclick="window.autorizarEmail()">Autorizar E-mail</button>
-                </div>
-                <div class="secao-conteudo">
-                    <table id="tabela-acessos">
-                        <thead><tr><th>E-mail Autorizado</th><th>Ações</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
                 </div>
             </div>
         </div>
@@ -519,7 +498,7 @@
             } catch (e) { console.error(e); }
         };
 
-        // CLIENTES
+        // CLIENTES - ATUALIZADO (Edição e Exclusão)
         window.configurarPesquisaClientes = function() {
             const inputBusca = document.getElementById('busca-cliente');
             const listaSugestoes = document.getElementById('lista-sugestoes');
@@ -549,20 +528,53 @@
                 const tbody = document.querySelector('#tabela-lista-clientes tbody');
                 tbody.innerHTML = '';
                 listaClientesCache.forEach(c => {
-                    const tr = document.createElement('tr'); tr.innerHTML = `<td>${c.nome}</td>`; tbody.appendChild(tr);
+                    const tr = document.createElement('tr'); 
+                    tr.innerHTML = `
+                        <td>${c.nome}</td>
+                        <td>
+                            <button class="btn-acao btn-editar" onclick="window.editarCliente('${c.id}')">Editar</button>
+                            <button class="btn-acao btn-excluir" onclick="window.excluirCliente('${c.id}')">Excluir</button>
+                        </td>`; 
+                    tbody.appendChild(tr);
                 });
             } catch (e) { console.error(e); }
         };
 
-        window.cadastrarCliente = async function() {
-            const nome = document.getElementById('novo-cliente-nome').value.trim();
-            if (!nome) return;
+        window.salvarCliente = async function() {
+            const id = document.getElementById('cliente-id').value;
+            const nome = document.getElementById('cliente-nome').value.trim();
+            if (!nome) { alert("Por favor, preencha o nome do cliente."); return; }
             try {
-                await addDoc(collection(db, "clientes"), { nome: nome });
-                document.getElementById('novo-cliente-nome').value = ''; 
+                if (id) {
+                    await updateDoc(doc(db, "clientes", id), { nome: nome });
+                } else {
+                    await addDoc(collection(db, "clientes"), { nome: nome });
+                }
+                window.limparFormCliente(); 
                 await window.buscarClientes(); 
             } catch (e) { console.error(e); }
         };
+
+        window.editarCliente = function(id) {
+            const c = listaClientesCache.find(x => x.id === id);
+            if(c) { 
+                document.getElementById('cliente-id').value = c.id; 
+                document.getElementById('cliente-nome').value = c.nome; 
+            }
+        };
+
+        window.excluirCliente = async function(id) { 
+            if(confirm("Tem certeza que deseja excluir este cliente?\n\nAs contas pendentes dele NÃO serão apagadas, mas o nome desaparecerá das buscas do caixa.")) { 
+                await deleteDoc(doc(db, "clientes", id)); 
+                await window.buscarClientes(); 
+            } 
+        };
+
+        window.limparFormCliente = function() { 
+            document.getElementById('cliente-id').value = ''; 
+            document.getElementById('cliente-nome').value = ''; 
+        };
+
 
         // ==========================================
         // RELATÓRIOS E EXTRATO DE CLIENTES
