@@ -16,24 +16,20 @@
             display: flex; 
             flex-direction: column; 
             height: 100vh; 
-            
-            /* BLOQUEIO DE SELEÇÃO DE TEXTO */
-            -webkit-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            /* O user-select: none foi removido daqui e passado para o JavaScript condicional */
         }
 
-        /* PERMISSÃO DE SELEÇÃO APENAS ONDE É NECESSÁRIO (Campos de digitação) */
+        /* Garante que, mesmo que a proteção ative no body, os campos de texto funcionem */
         input, select, textarea {
-            -webkit-user-select: auto;
-            -ms-user-select: auto;
-            user-select: auto;
+            -webkit-user-select: auto !important;
+            -ms-user-select: auto !important;
+            user-select: auto !important;
         }
         
         /* Cabeçalho com Logo */
         header { background-color: #2c3e50; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         .logo-header { display: flex; align-items: center; gap: 15px; }
-        .img-logo { height: 45px; } /* Círculo removido */
+        .img-logo { height: 45px; } 
         
         .menu-botoes button { background-color: #34495e; color: white; border: 1px solid #ecf0f1; padding: 0.5rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 5px; }
         .menu-botoes button:hover { background-color: #ecf0f1; color: #2c3e50; }
@@ -46,7 +42,7 @@
         /* TELA DE LOGIN COM LOGO */
         #tela-login { flex-direction: column; justify-content: center; align-items: center; background-color: #2c3e50; color: white; height: 100vh; display: flex; }
         .caixa-login { background: white; padding: 3rem; border-radius: 8px; text-align: center; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .caixa-login img { height: 100px; margin-bottom: 1rem; } /* Círculo removido */
+        .caixa-login img { height: 100px; margin-bottom: 1rem; } 
         .caixa-login h1 { margin-bottom: 1rem; color: #2c3e50; }
         .btn-google { background-color: #4285F4; color: white; border: none; padding: 12px 24px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .btn-google:hover { background-color: #3367D6; }
@@ -227,6 +223,15 @@
                     <p>Total Recebido na Hora (Dinheiro/Pix/Cartão): <span id="rel-total-recebido" class="total-destaque">R$ 0,00</span></p>
                     <p>Total Pendurado na Rua (A Receber): <span id="rel-total-pendurado" class="total-destaque" style="color:#e67e22;">R$ 0,00</span></p>
                 </div>
+
+                <div class="secao-conteudo">
+                    <h3>🏆 Top 5 - Maiores Compradores</h3>
+                    <p style="font-size: 0.9rem; margin-bottom: 10px; color: #7f8c8d;">Ranking dos clientes que mais geraram valor em compras (Soma total).</p>
+                    <table id="tabela-ranking">
+                        <thead><tr><th>Posição</th><th>Cliente</th><th>Total Consumido</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
                 
                 <div class="secao-conteudo">
                     <h3>Todas as Contas Penduradas (Fiados Gerais)</h3>
@@ -259,22 +264,6 @@
         </div>
     </main>
 
-    <script>
-        /*
-        document.addEventListener('contextmenu', function(event) {
-            event.preventDefault();
-        });
-
-        document.onkeydown = function(e) {
-            if (e.keyCode === 123) return false;
-            if (e.ctrlKey && e.keyCode === 85) return false;
-            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) return false;
-            if (e.ctrlKey && e.keyCode === 83) return false;
-            if (e.ctrlKey && e.keyCode === 80) return false;
-        };
-        */
-    </script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, deleteDoc, doc, query, orderBy, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -301,7 +290,31 @@
         let total = 0;
         let listaClientesCache = []; 
         let listaProdutosCache = [];
-        let vendasCacheGlobal = [];
+        let vendasCacheGlobal = []; 
+
+        // ==========================================
+        // FUNÇÃO ANTI-CÓPIA INTELIGENTE
+        // ==========================================
+        window.ativarProtecaoAntiCopia = function() {
+            // Aplica a trava de seleção de texto via JavaScript
+            document.body.style.webkitUserSelect = 'none';
+            document.body.style.msUserSelect = 'none';
+            document.body.style.userSelect = 'none';
+            
+            // Trava o clique direito
+            document.addEventListener('contextmenu', function(event) {
+                event.preventDefault();
+            });
+
+            // Trava os atalhos de desenvolvedor
+            document.addEventListener('keydown', function(e) {
+                if (e.keyCode === 123) { e.preventDefault(); return false; } // F12
+                if (e.ctrlKey && e.keyCode === 85) { e.preventDefault(); return false; } // Ctrl+U
+                if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) { e.preventDefault(); return false; } // Inspecionar
+                if (e.ctrlKey && e.keyCode === 83) { e.preventDefault(); return false; } // Ctrl+S
+                if (e.ctrlKey && e.keyCode === 80) { e.preventDefault(); return false; } // Ctrl+P
+            });
+        };
 
         // ==========================================
         // SISTEMA DE AUTENTICAÇÃO
@@ -334,7 +347,15 @@
                     emailUsuarioLogado = email;
                     telaLogin.classList.add('escondido');
                     cabecalho.classList.remove('escondido');
-                    document.getElementById('status-conexao').textContent = `(Logado como ${email})`;
+                    
+                    // LÓGICA DO ANTI-CÓPIA ATIVADA AQUI
+                    if (email !== EMAIL_ADMIN_MASTER) {
+                        window.ativarProtecaoAntiCopia();
+                        document.getElementById('status-conexao').textContent = `(Caixa - ${email})`;
+                    } else {
+                        document.getElementById('status-conexao').textContent = `(Modo DEV - ${email})`;
+                        console.log("🟢 Autenticado como Admin. Defesas anti-cópia desativadas.");
+                    }
                     
                     window.alternarTela('caixa'); 
                     window.iniciarSistema(); 
@@ -363,7 +384,7 @@
                 document.getElementById('novo-acesso-email').value = "";
                 window.listarAcessos();
             } catch (e) { console.error(e); } 
-            finally { document.getElementById('status-conexao').textContent = `(Logado como ${emailUsuarioLogado})`; }
+            finally { document.getElementById('status-conexao').textContent = emailUsuarioLogado === EMAIL_ADMIN_MASTER ? `(Modo DEV - ${emailUsuarioLogado})` : `(Caixa - ${emailUsuarioLogado})`; }
         };
 
         window.listarAcessos = async function() {
@@ -596,22 +617,33 @@
 
         // RELATÓRIOS E EXTRATO DE CLIENTES
         window.gerarRelatorios = async function() {
-            let totalRecebido = 0; let totalPendurado = 0; const contasClientes = {};
+            let totalRecebido = 0; 
+            let totalPendurado = 0; 
+            const contasClientes = {};
+            const totalGastoPorCliente = {}; // Variável para o Ranking
+
             const tbodyHistorico = document.querySelector('#tabela-historico tbody');
             const tbodyFiados = document.querySelector('#tabela-fiados tbody');
+            const tbodyRanking = document.querySelector('#tabela-ranking tbody');
             const selectExtrato = document.getElementById('rel-cliente-select');
             
             tbodyHistorico.innerHTML = '<tr><td colspan="4">Carregando...</td></tr>';
             tbodyFiados.innerHTML = '<tr><td colspan="2">Carregando...</td></tr>';
+            tbodyRanking.innerHTML = '<tr><td colspan="3">Carregando...</td></tr>';
+            
             vendasCacheGlobal = []; 
 
             try {
                 const querySnapshot = await getDocs(collection(db, "vendas"));
-                tbodyHistorico.innerHTML = ''; tbodyFiados.innerHTML = '';
+                tbodyHistorico.innerHTML = ''; 
+                tbodyFiados.innerHTML = '';
                 
                 querySnapshot.forEach((doc) => {
                     const v = doc.data();
                     vendasCacheGlobal.push(v);
+                    
+                    // Soma o total que esse cliente já consumiu (pago ou não)
+                    totalGastoPorCliente[v.cliente] = (totalGastoPorCliente[v.cliente] || 0) + v.total;
                     
                     if (v.metodoPagamento === 'Pendurado') {
                         totalPendurado += v.total; 
@@ -628,6 +660,7 @@
                 document.getElementById('rel-total-recebido').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
                 document.getElementById('rel-total-pendurado').textContent = `R$ ${totalPendurado.toFixed(2).replace('.', ',')}`;
 
+                // --- GERAÇÃO DA TABELA DE FIADOS ---
                 if (Object.keys(contasClientes).length === 0) {
                     tbodyFiados.innerHTML = '<tr><td colspan="2">Nenhuma conta pendurada.</td></tr>';
                 } else {
@@ -638,6 +671,35 @@
                     }
                 }
 
+                // --- GERAÇÃO DO RANKING TOP 5 ---
+                tbodyRanking.innerHTML = '';
+                
+                // Converte o objeto de gastos em um array, ordena do maior pro menor e corta os 5 primeiros
+                const rankingTop5 = Object.keys(totalGastoPorCliente)
+                    .map(cliente => ({ nome: cliente, total: totalGastoPorCliente[cliente] }))
+                    .sort((a, b) => b.total - a.total)
+                    .slice(0, 5);
+
+                if (rankingTop5.length === 0) {
+                    tbodyRanking.innerHTML = '<tr><td colspan="3">Nenhuma venda registrada ainda.</td></tr>';
+                } else {
+                    rankingTop5.forEach((item, index) => {
+                        const tr = document.createElement('tr');
+                        let icone = '';
+                        if(index === 0) icone = '🥇 ';
+                        else if(index === 1) icone = '🥈 ';
+                        else if(index === 2) icone = '🥉 ';
+                        
+                        tr.innerHTML = `
+                            <td>${icone}${index + 1}º</td>
+                            <td><b>${item.nome}</b></td>
+                            <td style="color: #27ae60; font-weight: bold;">R$ ${item.total.toFixed(2).replace('.', ',')}</td>
+                        `;
+                        tbodyRanking.appendChild(tr);
+                    });
+                }
+
+                // --- PREENCHE O SELECT DE EXTRATOS ---
                 const clientesComVenda = [...new Set(vendasCacheGlobal.map(v => v.cliente))].sort();
                 selectExtrato.innerHTML = '<option value="">-- Escolha um Cliente --</option>';
                 clientesComVenda.forEach(nome => {
