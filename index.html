@@ -33,7 +33,7 @@
         /* Cabeçalho com Logo */
         header { background-color: #2c3e50; color: white; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         .logo-header { display: flex; align-items: center; gap: 15px; }
-        .img-logo { height: 45px; }
+        .img-logo { height: 45px; } /* Círculo removido */
         
         .menu-botoes button { background-color: #34495e; color: white; border: 1px solid #ecf0f1; padding: 0.5rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 5px; }
         .menu-botoes button:hover { background-color: #ecf0f1; color: #2c3e50; }
@@ -46,7 +46,7 @@
         /* TELA DE LOGIN COM LOGO */
         #tela-login { flex-direction: column; justify-content: center; align-items: center; background-color: #2c3e50; color: white; height: 100vh; display: flex; }
         .caixa-login { background: white; padding: 3rem; border-radius: 8px; text-align: center; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .caixa-login img { height: 100px; margin-bottom: 1rem; }
+        .caixa-login img { height: 100px; margin-bottom: 1rem; } /* Círculo removido */
         .caixa-login h1 { margin-bottom: 1rem; color: #2c3e50; }
         .btn-google { background-color: #4285F4; color: white; border: none; padding: 12px 24px; font-size: 1.1rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; }
         .btn-google:hover { background-color: #3367D6; }
@@ -241,7 +241,26 @@
         </div>
     </main>
 
+    <main class="container escondido" id="tela-acessos">
+        <div class="tela-conteudo">
+            <div style="max-width: 800px; margin: 0 auto; width: 100%;">
+                <h2>Gerenciar Acessos ao Sistema</h2>
+                <div class="form-cadastro">
+                    <input type="email" id="novo-acesso-email" placeholder="Digite o e-mail do Gmail para autorizar..." autocomplete="off">
+                    <button onclick="window.autorizarEmail()">Autorizar E-mail</button>
+                </div>
+                <div class="secao-conteudo">
+                    <table id="tabela-acessos">
+                        <thead><tr><th>E-mail Autorizado</th><th>Ações</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
     <script>
+        /*
         document.addEventListener('contextmenu', function(event) {
             event.preventDefault();
         });
@@ -253,6 +272,7 @@
             if (e.ctrlKey && e.keyCode === 83) return false;
             if (e.ctrlKey && e.keyCode === 80) return false;
         };
+        */
     </script>
 
     <script type="module">
@@ -281,7 +301,7 @@
         let total = 0;
         let listaClientesCache = []; 
         let listaProdutosCache = [];
-        let vendasCacheGlobal = []; // Guarda as vendas para gerar extratos rápidos
+        let vendasCacheGlobal = [];
 
         // ==========================================
         // SISTEMA DE AUTENTICAÇÃO
@@ -375,7 +395,7 @@
         };
 
         // ==========================================
-        // RESTANTE DO SISTEMA (Caixa, Produtos, Clientes)
+        // RESTANTE DO SISTEMA
         // ==========================================
         
         window.iniciarSistema = function() {
@@ -479,7 +499,6 @@
             const clienteValido = listaClientesCache.find(c => c.nome.toLowerCase() === nomeDigitado.toLowerCase());
             if (!clienteValido) { alert('Cliente não encontrado.'); return; }
 
-            // Salva os itens consumidos na venda
             const itensComprados = carrinho.map(i => ({ nome: i.nome, preco: i.preco }));
 
             const venda = {
@@ -488,7 +507,7 @@
                 metodoPagamento: metodo,
                 total: total,
                 vendedor: emailUsuarioLogado,
-                itens: itensComprados // NOVO: Guarda os produtos comprados
+                itens: itensComprados
             };
 
             try {
@@ -498,7 +517,7 @@
             } catch (e) { console.error(e); }
         };
 
-        // CLIENTES - ATUALIZADO (Edição e Exclusão)
+        // CLIENTES
         window.configurarPesquisaClientes = function() {
             const inputBusca = document.getElementById('busca-cliente');
             const listaSugestoes = document.getElementById('lista-sugestoes');
@@ -575,10 +594,7 @@
             document.getElementById('cliente-nome').value = ''; 
         };
 
-
-        // ==========================================
         // RELATÓRIOS E EXTRATO DE CLIENTES
-        // ==========================================
         window.gerarRelatorios = async function() {
             let totalRecebido = 0; let totalPendurado = 0; const contasClientes = {};
             const tbodyHistorico = document.querySelector('#tabela-historico tbody');
@@ -587,16 +603,15 @@
             
             tbodyHistorico.innerHTML = '<tr><td colspan="4">Carregando...</td></tr>';
             tbodyFiados.innerHTML = '<tr><td colspan="2">Carregando...</td></tr>';
-            vendasCacheGlobal = []; // Limpa o cache
+            vendasCacheGlobal = []; 
 
             try {
-                // Puxa tudo do banco
                 const querySnapshot = await getDocs(collection(db, "vendas"));
                 tbodyHistorico.innerHTML = ''; tbodyFiados.innerHTML = '';
                 
                 querySnapshot.forEach((doc) => {
                     const v = doc.data();
-                    vendasCacheGlobal.push(v); // Salva no cache para o Extrato
+                    vendasCacheGlobal.push(v);
                     
                     if (v.metodoPagamento === 'Pendurado') {
                         totalPendurado += v.total; 
@@ -610,11 +625,9 @@
                     tbodyHistorico.appendChild(tr);
                 });
 
-                // Atualiza Totais
                 document.getElementById('rel-total-recebido').textContent = `R$ ${totalRecebido.toFixed(2).replace('.', ',')}`;
                 document.getElementById('rel-total-pendurado').textContent = `R$ ${totalPendurado.toFixed(2).replace('.', ',')}`;
 
-                // Tabela de Fiados
                 if (Object.keys(contasClientes).length === 0) {
                     tbodyFiados.innerHTML = '<tr><td colspan="2">Nenhuma conta pendurada.</td></tr>';
                 } else {
@@ -625,7 +638,6 @@
                     }
                 }
 
-                // Preenche o Select do Extrato apenas com quem tem vendas cadastradas
                 const clientesComVenda = [...new Set(vendasCacheGlobal.map(v => v.cliente))].sort();
                 selectExtrato.innerHTML = '<option value="">-- Escolha um Cliente --</option>';
                 clientesComVenda.forEach(nome => {
@@ -634,13 +646,11 @@
                     selectExtrato.appendChild(opt);
                 });
 
-                // Esconde a área de extrato se estiver aberta
                 document.getElementById('resultado-extrato').classList.add('escondido');
 
             } catch(e) { console.error(e); }
         };
 
-        // GERA O EXTRATO DETALHADO DO CLIENTE
         window.gerarExtratoCliente = function() {
             const clienteSelecionado = document.getElementById('rel-cliente-select').value;
             const divResultado = document.getElementById('resultado-extrato');
@@ -651,7 +661,6 @@
             let totalPendente = 0;
             let itensConsumidos = [];
 
-            // Filtra as vendas apenas desse cliente
             const vendasDoCliente = vendasCacheGlobal.filter(v => v.cliente === clienteSelecionado);
 
             vendasDoCliente.forEach(v => {
@@ -661,18 +670,15 @@
                     totalPago += v.total;
                 }
 
-                // Se a venda tiver os itens (novo formato), extrai os produtos
                 if(v.itens && v.itens.length > 0) {
                     v.itens.forEach(item => {
                         itensConsumidos.push({ data: v.data.split(' ')[0], nome: item.nome, preco: item.preco, status: v.metodoPagamento });
                     });
                 } else {
-                    // Para vendas antigas que não tinham a lista de itens salva
                     itensConsumidos.push({ data: v.data.split(' ')[0], nome: 'Venda Geral (S/ Detalhes)', preco: v.total, status: v.metodoPagamento });
                 }
             });
 
-            // Monta o visual do Cupom/Extrato
             let html = `<h4 style="margin-bottom: 10px; color: #2c3e50; font-size: 1.3rem;">Conta de: <span style="color:#3498db;">${clienteSelecionado}</span></h4>`;
             html += `<p style="font-size: 1.1rem; margin-bottom: 5px;"><strong>Já Pagou (Din/Pix/Cartão):</strong> <span style="color:#27ae60;">R$ ${totalPago.toFixed(2).replace('.', ',')}</span></p>`;
             html += `<p style="font-size: 1.1rem; margin-bottom: 20px;"><strong>Falta Pagar (Fiado):</strong> <span style="color:#e74c3c;">R$ ${totalPendente.toFixed(2).replace('.', ',')}</span></p>`;
