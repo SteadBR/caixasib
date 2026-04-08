@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cantina do Retiro - Nuvem</title>
+    <title>CANTINA</title>
     
     <link rel="icon" href="https://i.imgur.com/j6J7J5v.png" type="image/png">
     
@@ -54,7 +54,7 @@
         .grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 1rem; overflow-y: auto; max-height: 70vh; }
         .btn-produto { background-color: #ecf0f1; border: 1px solid #bdc3c7; padding: 1rem; border-radius: 6px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background-color 0.2s; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;}
         .btn-produto span { color: #27ae60; font-size: 0.9rem; display: block; margin-top: 5px; }
-        .btn-produto .info-combo { font-size: 0.75rem; color: #e67e22; margin-top: 3px; font-weight: normal; } /* NOVO: Estilo info combo */
+        .btn-produto .info-combo { font-size: 0.75rem; color: #e67e22; margin-top: 3px; font-weight: normal; } 
         .btn-produto:hover { background-color: #d5dbdb; }
         
         .painel-carrinho { flex: 1.2; min-width: 320px; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
@@ -75,7 +75,7 @@
         .btn-qtd { width: 24px; height: 24px; border-radius: 50%; border: none; background: #bdc3c7; color: white; font-weight: bold; cursor: pointer; }
         .btn-qtd:hover { background: #95a5a6; }
         .carrinho-item-preco { flex: 1; text-align: right; font-weight: bold; color: #27ae60; }
-        .carrinho-item-preco small { display: block; font-size: 0.7rem; color: #e67e22; } /* NOVO: Aviso de combo aplicado */
+        .carrinho-item-preco small { display: block; font-size: 0.7rem; color: #e67e22; } 
         .btn-remover-item { background: none; border: none; font-size: 1.2rem; cursor: pointer; margin-left: 10px; transition: transform 0.1s; }
         .btn-remover-item:hover { transform: scale(1.2); }
 
@@ -102,12 +102,11 @@
         th { background-color: #f2f2f2; }
         .total-destaque { font-weight: bold; color: #e74c3c; font-size: 1.2rem; }
         
-        /* Formulários */
         .form-cadastro { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .form-cadastro input { flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
         .form-cadastro button { padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         
-        /* NOVO: Filtro de Datas no Relatório */
+        /* Filtro de Datas no Relatório */
         .filtro-data-container { display: flex; gap: 10px; align-items: center; background: #ebf5fb; padding: 10px; border-radius: 6px; border: 1px solid #3498db; }
         .filtro-data-container input[type="date"] { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; color: #2c3e50;}
 
@@ -119,17 +118,25 @@
         #status-conexao { font-size: 0.8rem; color: #f1c40f; margin-left: 10px; font-weight: normal; }
 
         /* ========================================================
-           CSS PARA IMPRESSÃO TÉRMICA 80mm
+           CSS PARA IMPRESSÃO TÉRMICA 80mm - ATUALIZADO P/ LEITURA
            ======================================================== */
         #cupom-impressao { display: none; } 
 
         @media print {
             body { background: white !important; margin: 0; padding: 0; color: black; }
             #tela-login, header, main, .escondido { display: none !important; }
-            #cupom-impressao { display: block !important; width: 72mm; margin: 0 auto; padding: 0; font-family: 'Courier New', Courier, monospace; font-size: 12px; color: black; }
+            #cupom-impressao { 
+                display: block !important; 
+                width: 72mm; 
+                margin: 0 auto; 
+                padding: 0; 
+                font-family: 'Courier New', Courier, monospace; 
+                font-size: 14px; /* Aumentado */
+                color: black; 
+            }
             .cupom-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-            .cupom-table th, .cupom-table td { padding: 2px 0; word-wrap: break-word; font-size: 11px; border-bottom: 1px dashed #ccc;}
-            .col-qtd { width: 15%; } .col-item { width: 55%; } .col-valor { width: 30%; text-align: right; }
+            .cupom-table th, .cupom-table td { padding: 4px 0; word-wrap: break-word; font-size: 14px; border-bottom: 1px dashed #ccc;}
+            .col-qtd { width: 18%; } .col-item { width: 55%; } .col-valor { width: 27%; text-align: right; }
             @page { margin: 0; }
         }
     </style>
@@ -140,8 +147,8 @@
 
     <div id="tela-login">
         <div class="caixa-login">
-            <img src="https://i.imgur.com/j6J7J5v.png" alt="Logo Cantina SIB">
-            <h1>Cantina do Retiro</h1>
+            <img src="https://i.imgur.com/j6J7J5v.png" alt="Logo CANTINA">
+            <h1>CANTINA</h1>
             <p>Acesso restrito a usuários autorizados.</p>
             <button class="btn-google" onclick="window.loginGoogle()">
                 <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
@@ -154,7 +161,7 @@
         <div class="logo-header">
             <img src="https://i.imgur.com/j6J7J5v.png" alt="Logo" class="img-logo">
             <h1>
-                Cantina 
+                CANTINA
                 <span id="status-conexao"></span>
                 <span id="indicador-rede">🟢 Online</span>
             </h1>
@@ -403,7 +410,6 @@
         let transacoesCacheGlobal = []; 
         let metodoPagamentoCaixa = null;
 
-        // Variaveis para impressão de ranking
         let dataInicioFiltroStr = "";
         let dataFimFiltroStr = "";
         let rankingEmMemoriaParaImpressao = [];
@@ -422,7 +428,6 @@
             return new Date(y, m - 1, d, hr, min, sec);
         }
 
-        // Formata data do input type=date para exibir no cupom
         function formatarDataParaExibicao(dataIso) {
             if(!dataIso) return "Todo o Período";
             const [y, m, d] = dataIso.split('-');
@@ -501,7 +506,6 @@
                         document.getElementById('status-conexao').textContent = `(Modo DEV - ${email})`;
                     }
                     
-                    // Configura os inputs de data para HOJE
                     const dataHojeIso = new Date().toISOString().split('T')[0];
                     document.getElementById('filtro-data-inicio').value = dataHojeIso;
                     document.getElementById('filtro-data-fim').value = dataHojeIso;
@@ -621,7 +625,6 @@
 
             const produtoData = { nome: nome, preco: preco };
             
-            // Valida o Combo
             if(comboQtd && comboPreco) {
                 produtoData.comboQtd = parseInt(comboQtd);
                 produtoData.comboPreco = parseFloat(comboPreco.replace(',', '.'));
@@ -691,7 +694,6 @@
             }
 
             carrinho.forEach((item, index) => {
-                // Matemática do Combo
                 let subtotal = 0;
                 let avisoCombo = '';
 
@@ -737,33 +739,33 @@
                 <div style="text-align: center; margin-bottom: 10px;">
                     <h3 style="margin: 0; font-size: 18px;">CONJUBACENTRO</h3>
                     <h4 style="margin: 0; font-size: 14px;">CANTINA</h4>
-                    <p style="margin: 0; font-size: 11px; margin-top: 3px;">*** ${tipo.toUpperCase()} ***</p>
+                    <p style="margin: 0; font-size: 13px; margin-top: 3px;">*** ${tipo.toUpperCase()} ***</p>
                 </div>
                 <p style="margin: 0; font-size: 14px;"><strong>Pedido:</strong> ${numeroPedido}</p>
-                <p style="margin: 0;"><strong>Data:</strong> ${venda.data}</p>
-                <p style="margin: 0;"><strong>Cliente:</strong> ${venda.cliente}</p>
+                <p style="margin: 0; font-size: 14px;"><strong>Data:</strong> ${venda.data}</p>
+                <p style="margin: 0; font-size: 14px;"><strong>Cliente:</strong> ${venda.cliente}</p>
                 <hr style="border-top: 1px dashed black; margin: 8px 0;">
                 <table class="cupom-table">
                     <thead><tr><th class="col-qtd">Qtd</th><th class="col-item">Item</th><th class="col-valor">R$</th></tr></thead>
                     <tbody>
             `;
             
-            // Re-calculando combos no cupom usando os dados salvos na venda
             venda.itens.forEach(item => {
                 const qtd = item.qtd || 1;
-                // Busca se esse produto tinha combo no momento da venda
-                // Como não salvamos a estrutura do combo no BD da venda, a gente usa o subtotal real calculado no fechamento
-                // que salvamos como "subtotal" dentro do array itens no novo finalizarPedido
                 const valSub = item.subtotal !== undefined ? item.subtotal : (item.preco * qtd); 
-                htmlCupom += `<tr><td>${qtd}x</td><td>${item.nome}</td><td style="text-align: right;">${valSub.toFixed(2).replace('.', ',')}</td></tr>`;
+                htmlCupom += `<tr>
+                                <td style="font-weight: bold; font-size: 15px;">${qtd}x</td>
+                                <td style="font-weight: bold; font-size: 14px;">${item.nome}</td>
+                                <td style="text-align: right; font-size: 14px;">${valSub.toFixed(2).replace('.', ',')}</td>
+                              </tr>`;
             });
 
             htmlCupom += `
                     </tbody>
                 </table>
                 <hr style="border-top: 1px dashed black; margin: 8px 0;">
-                <div style="font-size: 12px; margin-bottom: 5px;">
-                    <div style="display:flex; justify-content:space-between;"><span>Total do Pedido:</span> <span>R$ ${venda.total.toFixed(2).replace('.', ',')}</span></div>
+                <div style="font-size: 14px; margin-bottom: 5px;">
+                    <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:16px;"><span>Total do Pedido:</span> <span>R$ ${venda.total.toFixed(2).replace('.', ',')}</span></div>
             `;
 
             if (venda.creditoUtilizado > 0) {
@@ -780,11 +782,11 @@
             
             if(venda.saldoCreditoRestante !== undefined) {
                 const saldoTexto = venda.saldoCreditoRestante >= 0 ? 'Crédito Positivo' : 'Dívida Atual';
-                htmlCupom += `<h3 style="text-align: center; margin: 5px 0; font-size: 14px;">SALDO: R$ ${Math.abs(venda.saldoCreditoRestante).toFixed(2).replace('.', ',')} <br><span style="font-size:10px;">(${saldoTexto})</span></h3>`;
+                htmlCupom += `<h3 style="text-align: center; margin: 5px 0; font-size: 15px;">SALDO: R$ ${Math.abs(venda.saldoCreditoRestante).toFixed(2).replace('.', ',')} <br><span style="font-size:12px;">(${saldoTexto})</span></h3>`;
             }
 
             htmlCupom += `
-                <div style="text-align: center; margin-top: 20px; font-size: 11px;">
+                <div style="text-align: center; margin-top: 20px; font-size: 12px;">
                     <p>Agradecemos a preferencia!</p>
                 </div>
             `;
@@ -795,7 +797,7 @@
 
         window.finalizarPedido = async function() {
             if (carrinho.length === 0) { alert('Carrinho vazio.'); return; }
-            if (!metodoPagamentoCaixa) { alert('Selecione uma forma de pagamento clicando nos botões.'); return; }
+            if (!metodoPagamentoCaixa) { alert('Selecione uma forma de pagamento clicando nos botões acima.'); return; }
             
             const inputBusca = document.getElementById('busca-cliente');
             const nomeDigitado = inputBusca.value.trim();
@@ -804,8 +806,6 @@
             const clienteValido = listaClientesCache.find(c => c.nome.toLowerCase() === nomeDigitado.toLowerCase());
             if (!clienteValido) { alert('Cliente não encontrado.'); return; }
 
-            // Mapeando itens e garantindo que o subtotal real (com ou sem combo) seja salvo no BD
-            // Assim não importa se o produto subir de preço amanhã, o cupom sempre puxará o valor histórico
             const itensComprados = carrinho.map(item => {
                 let subtotalItem = item.preco * item.qtd;
                 if (item.comboQtd && item.comboPreco && item.qtd >= item.comboQtd) {
@@ -840,7 +840,7 @@
                 const qNum = query(collection(db, "vendas"), orderBy("numero", "desc"), limit(1));
                 const snapNum = await getDocs(qNum);
                 if (!snapNum.empty) { proxNumero = (snapNum.docs[0].data().numero || 0) + 1; }
-            } catch (e) { proxNumero = Date.now().toString().slice(-5); }
+            } catch (e) { console.warn("Offline fallback for number", e); proxNumero = Date.now().toString().slice(-5); }
 
             const venda = {
                 numero: proxNumero,
@@ -1033,7 +1033,7 @@
         };
 
         // ==========================================
-        // RELATÓRIOS AVANÇADOS
+        // RELATÓRIOS AVANÇADOS (O LIVRO RAZÃO)
         // ==========================================
         window.configurarPesquisaClientesRelatorio = function() {
             const inputBusca = document.getElementById('busca-cliente-relatorio');
@@ -1073,15 +1073,10 @@
 
                 const queryTrans = await getDocs(collection(db, "transacoes_credito"));
                 transacoesCacheGlobal = [];
-                queryTrans.forEach((doc) => transacoesCacheGlobal.push(doc.data()));
+                queryTrans.forEach((doc) => {
+                    transacoesCacheGlobal.push(doc.data());
+                });
                 
-                // Se os campos de data estiverem vazios, seta pra hoje.
-                if(!document.getElementById('filtro-data-inicio').value) {
-                    const dataHojeIso = new Date().toISOString().split('T')[0];
-                    document.getElementById('filtro-data-inicio').value = dataHojeIso;
-                    document.getElementById('filtro-data-fim').value = dataHojeIso;
-                }
-
                 window.atualizarFechamentoCaixa();
                 window.atualizarTabelasGlobais();
 
@@ -1090,21 +1085,13 @@
             } catch(e) { console.error(e); }
         };
 
-        window.limparFiltroData = function() {
-            document.getElementById('filtro-data-inicio').value = '';
-            document.getElementById('filtro-data-fim').value = '';
-            window.atualizarFechamentoCaixa();
-        }
-
         window.atualizarFechamentoCaixa = function() {
             const dataInicioIso = document.getElementById('filtro-data-inicio').value;
             const dataFimIso = document.getElementById('filtro-data-fim').value;
 
-            // Salva as strings globais para usar no cupom impresso do ranking
             dataInicioFiltroStr = formatarDataParaExibicao(dataInicioIso);
             dataFimFiltroStr = formatarDataParaExibicao(dataFimIso);
 
-            // Cria objetos Date para comparação
             let dateInicio = null, dateFim = null;
             
             if(dataInicioIso) {
@@ -1119,7 +1106,7 @@
             }
             
             const isNoPeriodo = (dataStr) => {
-                if (!dateInicio && !dateFim) return true; // Se ambos vazios, mostra tudo
+                if (!dateInicio && !dateFim) return true; 
                 const dataObj = parseDataHoraBR(dataStr);
                 
                 if (dateInicio && dateFim) return dataObj >= dateInicio && dataObj <= dateFim;
@@ -1196,7 +1183,6 @@
             document.getElementById('fechamento-aportes').textContent = `R$ ${aportesCaixa.toFixed(2).replace('.', ',')}`;
             document.getElementById('fechamento-pendurado').textContent = `R$ ${novosFiados.toFixed(2).replace('.', ',')}`;
 
-            // --- ATUALIZA A TABELA DE TOP 5 BASEADA NESSE FILTRO DE DATA ---
             const consumoPorClienteNoPeriodo = {};
             vendasFiltradas.forEach(v => {
                 consumoPorClienteNoPeriodo[v.cliente] = (consumoPorClienteNoPeriodo[v.cliente] || 0) + v.total;
@@ -1210,7 +1196,7 @@
                 .sort((a, b) => b.total - a.total)
                 .slice(0, 5);
 
-            rankingEmMemoriaParaImpressao = rankingArray; // Salva para o botão imprimir
+            rankingEmMemoriaParaImpressao = rankingArray;
 
             if (rankingArray.length === 0) {
                 tbodyRanking.innerHTML = '<tr><td colspan="3">Nenhuma venda registrada no período.</td></tr>';
@@ -1224,6 +1210,12 @@
             }
         };
 
+        window.limparFiltroData = function() {
+            document.getElementById('filtro-data-inicio').value = '';
+            document.getElementById('filtro-data-fim').value = '';
+            window.atualizarFechamentoCaixa();
+        }
+
         window.reimprimirVenda = function(id) {
             const venda = vendasCacheGlobal.find(v => v.id === id);
             if (venda) { window.imprimirCupom(venda, "Reimpressão"); } 
@@ -1236,7 +1228,7 @@
             if(confirm(`ATENÇÃO: Você está prestes a apagar o Pedido #${venda.numero || 'S/N'}. O saldo do cliente será restaurado manualmente se necessário.\n\nDeseja continuar?`)) {
                 try {
                     await deleteDoc(doc(db, "vendas", id));
-                    alert("Venda apagada com sucesso! Lembre-se de reajustar o Saldo do cliente na aba Clientes se a venda apagada afetou o saldo dele.");
+                    alert("Venda apagada com sucesso!");
                     await window.gerarRelatorios(); 
                 } catch (e) { console.error("Erro ao apagar", e); alert("Erro ao excluir."); }
             }
@@ -1257,21 +1249,21 @@
             });
             if (!temFiado) tbodyFiados.innerHTML = '<tr><td colspan="2">Nenhuma dívida pendente.</td></tr>';
 
-            const totalGastoPorClienteGlobal = {}; 
+            const totalGastoPorCliente = {}; 
             vendasCacheGlobal.forEach(v => {
-                totalGastoPorClienteGlobal[v.cliente] = (totalGastoPorClienteGlobal[v.cliente] || 0) + v.total;
+                totalGastoPorCliente[v.cliente] = (totalGastoPorCliente[v.cliente] || 0) + v.total;
             });
 
             const tbodyConsumo = document.querySelector('#tabela-consumo-todos tbody');
             tbodyConsumo.innerHTML = '';
-            const consumoGlobalArray = Object.keys(totalGastoPorClienteGlobal)
-                .map(cliente => ({ nome: cliente, total: totalGastoPorClienteGlobal[cliente] }))
+            const consumoArray = Object.keys(totalGastoPorCliente)
+                .map(cliente => ({ nome: cliente, total: totalGastoPorCliente[cliente] }))
                 .sort((a, b) => a.nome.localeCompare(b.nome));
             
-            if (consumoGlobalArray.length === 0) {
+            if (consumoArray.length === 0) {
                 tbodyConsumo.innerHTML = '<tr><td colspan="2">Nenhuma venda registrada ainda.</td></tr>';
             } else {
-                consumoGlobalArray.forEach(item => {
+                consumoArray.forEach(item => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td>${item.nome}</td><td style="text-align:right;">R$ ${item.total.toFixed(2).replace('.', ',')}</td>`;
                     tbodyConsumo.appendChild(tr);
@@ -1301,7 +1293,8 @@
 
             vendasDoCliente.forEach(v => {
                 linhaDoTempo.push({
-                    dataObj: parseDataHoraBR(v.data), dataStr: v.data,
+                    dataObj: parseDataHoraBR(v.data),
+                    dataStr: v.data,
                     historico: `Pedido #${v.numero || 'S/N'} (${v.metodoPagamento})`,
                     saida: v.total,
                     entrada: (v.valorPago !== undefined ? v.valorPago : (v.metodoPagamento !== 'Pendurado' ? v.total : 0)), 
@@ -1311,7 +1304,8 @@
 
             transacoesDoCliente.forEach(t => {
                 linhaDoTempo.push({
-                    dataObj: parseDataHoraBR(t.data), dataStr: t.data,
+                    dataObj: parseDataHoraBR(t.data),
+                    dataStr: t.data,
                     historico: t.tipo,
                     saida: t.valor < 0 ? Math.abs(t.valor) : 0,
                     entrada: t.valor > 0 ? t.valor : 0,
@@ -1328,7 +1322,11 @@
                 linha.saldoParcial = saldoAcumulado;
             });
 
-            extratoEmMemoria = { cliente: nomeCorreto, saldoFinal: saldoAcumulado, linhas: linhaDoTempo };
+            extratoEmMemoria = {
+                cliente: nomeCorreto,
+                saldoFinal: saldoAcumulado,
+                linhas: linhaDoTempo
+            };
 
             let html = `<h4 style="margin-bottom: 10px; color: #2c3e50; font-size: 1.3rem;">Conta Corrente: <span style="color:#3498db;">${nomeCorreto}</span></h4>`;
             
@@ -1375,16 +1373,16 @@
             
             let htmlCupom = `
                 <div style="text-align: center; margin-bottom: 10px;">
-                    <h3 style="margin: 0; font-size: 16px;">CONJUBACENTRO</h3>
-                    <h4 style="margin: 0; font-size: 13px;">CANTINA</h4>
-                    <p style="margin: 0; font-size: 11px; margin-top: 3px;">*** EXTRATO DA CONTA ***</p>
+                    <h3 style="margin: 0; font-size: 18px;">CONJUBACENTRO</h3>
+                    <h4 style="margin: 0; font-size: 15px;">CANTINA</h4>
+                    <p style="margin: 0; font-size: 13px; margin-top: 3px;">*** EXTRATO DA CONTA ***</p>
                 </div>
-                <p style="margin: 0;"><strong>Cliente:</strong> ${extratoEmMemoria.cliente}</p>
-                <p style="margin: 0; font-size: 10px;"><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+                <p style="margin: 0; font-size: 14px;"><strong>Cliente:</strong> ${extratoEmMemoria.cliente}</p>
+                <p style="margin: 0; font-size: 12px;"><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
                 
                 <hr style="border-top: 1px dashed black; margin: 8px 0;">
                 
-                <table class="cupom-table" style="font-size: 10px;">
+                <table class="cupom-table" style="font-size: 13px;">
                     <thead><tr><th style="width:30%; text-align:left;">Data</th><th style="width:40%; text-align:center;">Saída / Ent</th><th style="width:30%; text-align:right;">Saldo</th></tr></thead>
                     <tbody>
             `;
@@ -1394,7 +1392,7 @@
                 const indicadorSinal = l.saldoParcial < 0 ? '-' : '';
                 
                 htmlCupom += `
-                    <tr><td colspan="3" style="border: none; padding-top:4px;"><b>${l.historico}</b></td></tr>
+                    <tr><td colspan="3" style="border: none; padding-top:4px; font-weight:bold;">${l.historico}</td></tr>
                     <tr>
                         <td style="text-align:left;">${l.dataStr.split(',')[0]}</td>
                         <td style="text-align:center;">${tracoMovimento}</td>
@@ -1409,9 +1407,9 @@
                     </tbody>
                 </table>
                 <hr style="border-top: 1px dashed black; margin: 8px 0;">
-                <h3 style="text-align: right; margin: 5px 0; font-size: 14px;">SALDO FINAL: R$ ${Math.abs(extratoEmMemoria.saldoFinal).toFixed(2).replace('.', ',')}</h3>
-                <h4 style="text-align: right; margin: 0; font-size: 11px;">(${txtSaldo})</h4>
-                <div style="text-align: center; margin-top: 20px; font-size: 10px;">
+                <h3 style="text-align: right; margin: 5px 0; font-size: 16px;">SALDO FINAL: R$ ${Math.abs(extratoEmMemoria.saldoFinal).toFixed(2).replace('.', ',')}</h3>
+                <h4 style="text-align: right; margin: 0; font-size: 13px;">(${txtSaldo})</h4>
+                <div style="text-align: center; margin-top: 20px; font-size: 12px;">
                     <p>Extrato para simples conferencia.</p>
                 </div>
             `;
@@ -1420,13 +1418,11 @@
             setTimeout(() => { window.print(); }, 100); 
         };
 
-        // NOVA FUNÇÃO: IMPRESSÃO DE RANKING
         window.imprimirRanking = function() {
             if(rankingEmMemoriaParaImpressao.length === 0) { alert("Não há dados de vendas no período selecionado para imprimir."); return; }
 
             const divCupom = document.getElementById('cupom-impressao');
             
-            // Tratamento visual da string de datas
             let strPeriodoImpresso = "";
             if (dataInicioFiltroStr === "Todo o Período" && dataFimFiltroStr === "Todo o Período") {
                 strPeriodoImpresso = "Todo o Período Histórico";
@@ -1438,16 +1434,16 @@
 
             let htmlCupom = `
                 <div style="text-align: center; margin-bottom: 10px;">
-                    <h3 style="margin: 0; font-size: 16px;">CONJUBACENTRO</h3>
-                    <h4 style="margin: 0; font-size: 13px;">CANTINA</h4>
-                    <p style="margin: 0; font-size: 11px; margin-top: 3px;">*** TOP 5 COMPRADORES ***</p>
+                    <h3 style="margin: 0; font-size: 18px;">CONJUBACENTRO</h3>
+                    <h4 style="margin: 0; font-size: 15px;">CANTINA</h4>
+                    <p style="margin: 0; font-size: 13px; margin-top: 3px;">*** TOP 5 COMPRADORES ***</p>
                 </div>
-                <p style="margin: 0; font-size: 11px;"><strong>Período:</strong><br>${strPeriodoImpresso}</p>
-                <p style="margin: 0; font-size: 10px;"><strong>Gerado em:</strong><br>${new Date().toLocaleString('pt-BR')}</p>
+                <p style="margin: 0; font-size: 13px;"><strong>Período:</strong><br>${strPeriodoImpresso}</p>
+                <p style="margin: 0; font-size: 12px;"><strong>Gerado em:</strong><br>${new Date().toLocaleString('pt-BR')}</p>
                 
                 <hr style="border-top: 1px dashed black; margin: 8px 0;">
                 
-                <table class="cupom-table" style="font-size: 11px;">
+                <table class="cupom-table" style="font-size: 14px;">
                     <thead><tr><th style="width:15%; text-align:left;">Pos</th><th style="width:50%; text-align:left;">Cliente</th><th style="width:35%; text-align:right;">Consumo</th></tr></thead>
                     <tbody>
             `;
@@ -1455,9 +1451,9 @@
             rankingEmMemoriaParaImpressao.forEach((item, index) => {
                 htmlCupom += `
                     <tr>
-                        <td style="text-align:left; font-weight:bold;">${index + 1}º</td>
-                        <td style="text-align:left;">${item.nome}</td>
-                        <td style="text-align:right;">R$ ${item.total.toFixed(2).replace('.', ',')}</td>
+                        <td style="text-align:left; font-weight:bold; font-size:15px;">${index + 1}º</td>
+                        <td style="text-align:left; font-weight:bold; font-size:14px;">${item.nome}</td>
+                        <td style="text-align:right; font-size:14px;">R$ ${item.total.toFixed(2).replace('.', ',')}</td>
                     </tr>
                 `;
             });
@@ -1466,7 +1462,7 @@
                     </tbody>
                 </table>
                 <hr style="border-top: 1px dashed black; margin: 8px 0;">
-                <div style="text-align: center; margin-top: 20px; font-size: 10px;">
+                <div style="text-align: center; margin-top: 20px; font-size: 12px;">
                     <p>Relatório Gerencial</p>
                 </div>
             `;
