@@ -18,7 +18,6 @@
             height: 100vh; 
         }
 
-        /* Garante que, mesmo que a proteção ative no body, os campos de texto funcionem */
         input, select, textarea {
             -webkit-user-select: auto !important;
             -ms-user-select: auto !important;
@@ -97,9 +96,35 @@
         .btn-excluir { background-color: #e74c3c; }
         
         #status-conexao { font-size: 0.8rem; color: #f1c40f; margin-left: 10px; font-weight: normal; }
+
+        /* ========================================================
+           CSS PARA IMPRESSÃO TÉRMICA (Oculta tudo, mostra só o cupom)
+           ======================================================== */
+        #cupom-impressao { display: none; } /* Oculto na tela normal */
+
+        @media print {
+            body { background: white !important; margin: 0; padding: 0; color: black; }
+            #tela-login, header, main, .escondido { display: none !important; }
+            
+            #cupom-impressao { 
+                display: block !important; 
+                width: 100%; 
+                max-width: 300px; /* Adapta-se a 58mm ou 80mm */
+                margin: 0; 
+                padding: 0; 
+                font-family: 'Courier New', Courier, monospace; 
+                font-size: 12px; 
+                color: black; 
+            }
+            
+            /* Remove margens padrão do navegador */
+            @page { margin: 0; }
+        }
     </style>
 </head>
 <body>
+
+    <div id="cupom-impressao"></div>
 
     <div id="tela-login">
         <div class="caixa-login">
@@ -356,7 +381,6 @@
                         document.getElementById('status-conexao').textContent = `(Caixa - ${email})`;
                     } else {
                         document.getElementById('status-conexao').textContent = `(Modo DEV - ${email})`;
-                        console.log("🟢 Autenticado como Admin. Defesas anti-cópia desativadas.");
                     }
                     
                     window.alternarTela('caixa'); 
@@ -425,7 +449,7 @@
             document.getElementById('data-atual').textContent = new Date().toLocaleDateString('pt-BR');
             window.configurarPesquisaClientesAutocomplete();
             window.configurarPesquisaProdutos(); 
-            window.configurarPesquisaClientesPainel(); // Nova função ativada
+            window.configurarPesquisaClientesPainel(); 
             window.buscarClientes();
             window.buscarProdutos(); 
         };
@@ -542,6 +566,58 @@
             totalSpan.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
         };
 
+        // NOVA FUNÇÃO: GERA O CUPOM E CHAMA A IMPRESSÃO
+        window.imprimirCupom = function(venda) {
+            const divCupom = document.getElementById('cupom-impressao');
+            
+            let htmlCupom = `
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0;">CANTINA DO RETIRO</h3>
+                    <p style="margin: 0; font-size: 10px;">Comprovante de Venda</p>
+                </div>
+                <p style="margin: 0;"><strong>Data:</strong> ${venda.data}</p>
+                <p style="margin: 0;"><strong>Cliente:</strong> ${venda.cliente}</p>
+                <p style="margin: 0;"><strong>Pagt:</strong> ${venda.metodoPagamento}</p>
+                <hr style="border-top: 1px dashed black; margin: 8px 0;">
+                <table style="width: 100%; text-align: left; font-size: 11px;">
+                    <thead><tr><th>Qtd</th><th>Item</th><th style="text-align: right;">R$</th></tr></thead>
+                    <tbody>
+            `;
+            
+            // Agrupar itens iguais para o cupom não ficar gigantesco
+            const itensAgrupados = {};
+            venda.itens.forEach(item => {
+                if(itensAgrupados[item.nome]) {
+                    itensAgrupados[item.nome].qtd += 1;
+                    itensAgrupados[item.nome].subtotal += item.preco;
+                } else {
+                    itensAgrupados[item.nome] = { qtd: 1, precoUnitario: item.preco, subtotal: item.preco };
+                }
+            });
+
+            for (const nome in itensAgrupados) {
+                const i = itensAgrupados[nome];
+                htmlCupom += `<tr>
+                                <td>${i.qtd}x</td>
+                                <td>${nome}</td>
+                                <td style="text-align: right;">${i.subtotal.toFixed(2).replace('.', ',')}</td>
+                              </tr>`;
+            }
+
+            htmlCupom += `
+                    </tbody>
+                </table>
+                <hr style="border-top: 1px dashed black; margin: 8px 0;">
+                <h3 style="text-align: right; margin: 5px 0;">TOTAL: R$ ${venda.total.toFixed(2).replace('.', ',')}</h3>
+                <div style="text-align: center; margin-top: 20px; font-size: 10px;">
+                    <p>Agradecemos a preferencia!</p>
+                </div>
+            `;
+            
+            divCupom.innerHTML = htmlCupom;
+            window.print(); // Abre a tela de impressão do navegador
+        };
+
         window.processarPagamento = async function(metodo) {
             if (carrinho.length === 0) { alert('Carrinho vazio.'); return; }
             const inputBusca = document.getElementById('busca-cliente');
@@ -564,7 +640,12 @@
 
             try {
                 await addDoc(collection(db, "vendas"), venda);
-                alert(`Venda salva! Método: ${metodo}`);
+                
+                // Pergunta se deseja imprimir o cupom
+                if(confirm(`Venda salva com sucesso!\nForma de Pagamento: ${metodo}\n\nDeseja imprimir o cupom?`)) {
+                    window.imprimirCupom(venda);
+                }
+
                 carrinho = []; 
                 window.atualizarCarrinho(); 
                 inputBusca.value = '';
@@ -590,7 +671,7 @@
             const divInfo = document.getElementById('info-credito-cliente');
 
             inputBusca.addEventListener('input', function() {
-                divInfo.innerHTML = ''; // Limpa o aviso de crédito se o usuário começar a apagar o nome
+                divInfo.innerHTML = ''; 
                 const termo = this.value.toLowerCase().trim();
                 listaSugestoes.innerHTML = ''; 
                 if (!termo) { listaSugestoes.classList.add('escondido'); return; }
@@ -602,7 +683,7 @@
                         li.onclick = () => { 
                             inputBusca.value = c.nome; 
                             listaSugestoes.classList.add('escondido');
-                            window.mostrarCreditoNoCaixa(c.credito); // Mostra se tem troco
+                            window.mostrarCreditoNoCaixa(c.credito); 
                         };
                         listaSugestoes.appendChild(li);
                     });
@@ -611,7 +692,6 @@
             document.addEventListener('click', function(e) { if (e.target !== inputBusca && e.target !== listaSugestoes) listaSugestoes.classList.add('escondido'); });
         };
 
-        // NOVA FUNÇÃO: Pesquisa na tabela de gerenciamento de clientes
         window.configurarPesquisaClientesPainel = function() {
             document.getElementById('busca-cliente-painel').addEventListener('input', function() {
                 const termo = this.value.toLowerCase().trim();
@@ -624,7 +704,6 @@
             });
         };
 
-        // Função separada para desenhar a tabela, permitindo a pesquisa funcionar sem recarregar o banco
         window.renderizarTabelaClientes = function(listaParaRenderizar) {
             const tbody = document.querySelector('#tabela-lista-clientes tbody');
             tbody.innerHTML = '';
@@ -660,7 +739,6 @@
                     listaClientesCache.push(cliente);
                 });
                 
-                // Desenha a tabela com todos os clientes ao carregar
                 window.renderizarTabelaClientes(listaClientesCache);
             } catch (e) { console.error(e); }
         };
@@ -673,10 +751,10 @@
                 if (id) {
                     await updateDoc(doc(db, "clientes", id), { nome: nome });
                 } else {
-                    await addDoc(collection(db, "clientes"), { nome: nome, credito: 0 }); // Inicia com 0 crédito
+                    await addDoc(collection(db, "clientes"), { nome: nome, credito: 0 }); 
                 }
                 window.limparFormCliente(); 
-                document.getElementById('busca-cliente-painel').value = ''; // Limpa a barra de pesquisa ao salvar
+                document.getElementById('busca-cliente-painel').value = ''; 
                 await window.buscarClientes(); 
             } catch (e) { console.error(e); }
         };
@@ -703,7 +781,7 @@
             try {
                 await updateDoc(doc(db, "clientes", id), { credito: novoCredito });
                 alert(`Sucesso! O novo saldo de ${c.nome} é: R$ ${novoCredito.toFixed(2).replace('.', ',')}`);
-                document.getElementById('busca-cliente-painel').value = ''; // Limpa a busca para atualizar a tabela geral
+                document.getElementById('busca-cliente-painel').value = ''; 
                 await window.buscarClientes(); 
             } catch(e) { console.error(e); alert("Erro ao atualizar crédito."); }
         };
