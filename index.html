@@ -29,6 +29,11 @@
         .logo-header { display: flex; align-items: center; gap: 15px; }
         .img-logo { height: 45px; } 
         
+        /* NOVO: Indicador de Rede */
+        #indicador-rede { font-size: 0.85rem; padding: 4px 8px; border-radius: 12px; margin-left: 10px; font-weight: bold; background: #27ae60; color: white; transition: all 0.3s;}
+        .modo-offline { background: #e74c3c !important; animation: piscar 2s infinite; }
+        @keyframes piscar { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
         .menu-botoes button { background-color: #34495e; color: white; border: 1px solid #ecf0f1; padding: 0.5rem 0.8rem; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 5px; }
         .menu-botoes button:hover { background-color: #ecf0f1; color: #2c3e50; }
         .btn-sair { background-color: #c0392b !important; border-color: #e74c3c !important; margin-left: 20px !important;}
@@ -156,7 +161,11 @@
     <header id="cabecalho-sistema" class="escondido">
         <div class="logo-header">
             <img src="https://i.imgur.com/j6J7J5v.png" alt="Logo" class="img-logo">
-            <h1>Cantina <span id="status-conexao"></span></h1>
+            <h1>
+                Cantina 
+                <span id="status-conexao"></span>
+                <span id="indicador-rede">🟢 Online</span>
+            </h1>
         </div>
         <div class="menu-botoes">
             <span id="data-atual" style="margin-right: 15px;"></span>
@@ -359,7 +368,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, deleteDoc, doc, query, orderBy, updateDoc, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // ATUALIZAÇÃO: Importando funções para persistência offline nativa do v10
+        import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, getDocs, getDoc, setDoc, deleteDoc, doc, query, orderBy, updateDoc, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -372,7 +382,12 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        
+        // ATUALIZAÇÃO: Ativando Banco com Persistência Offline
+        const db = initializeFirestore(app, {
+            localCache: persistentLocalCache({tabManager: persistentMultipleTabManager()})
+        });
+
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
         const EMAIL_ADMIN_MASTER = "leovitorjipa@gmail.com";
@@ -384,6 +399,28 @@
         let listaProdutosCache = [];
         let vendasCacheGlobal = []; 
         let metodoPagamentoCaixa = null;
+
+        // ==========================================
+        // GERENCIAMENTO DE CONEXÃO (ONLINE / OFFLINE)
+        // ==========================================
+        function atualizarIndicadorDeRede() {
+            const indicador = document.getElementById('indicador-rede');
+            if (navigator.onLine) {
+                indicador.textContent = '🟢 Online';
+                indicador.classList.remove('modo-offline');
+            } else {
+                indicador.textContent = '🔴 Offline (Salvando no aparelho)';
+                indicador.classList.add('modo-offline');
+            }
+        }
+        
+        // Escuta se a internet cair ou voltar enquanto usa o sistema
+        window.addEventListener('online', atualizarIndicadorDeRede);
+        window.addEventListener('offline', atualizarIndicadorDeRede);
+        
+        // Verifica assim que a página carrega
+        atualizarIndicadorDeRede();
+
 
         // ==========================================
         // FUNÇÃO ANTI-CÓPIA INTELIGENTE
@@ -422,8 +459,14 @@
                 let temPermissao = false;
                 if (email === EMAIL_ADMIN_MASTER) temPermissao = true;
                 else {
-                    const docSnap = await getDoc(doc(db, "usuarios_autorizados", email));
-                    if (docSnap.exists()) temPermissao = true;
+                    // Nota: O docSnap funcionará mesmo offline se o usuário já tiver logado nesta máquina antes!
+                    try {
+                        const docSnap = await getDoc(doc(db, "usuarios_autorizados", email));
+                        if (docSnap.exists()) temPermissao = true;
+                    } catch(e) {
+                        // Se der erro por falta de net num PC virgem, ele não loga, mas num PC com cache ele passa
+                        console.warn("Lendo permissão do cache offline", e);
+                    }
                 }
                 if (temPermissao) {
                     emailUsuarioLogado = email;
@@ -647,7 +690,7 @@
             btnElement.classList.add('selecionado');
         };
 
-        // GERAÇÃO DE CUPOM E IMPRESSÃO (Sem Logo, Com Títulos Alterados)
+        // GERAÇÃO DE CUPOM (Sem Logo, Com Títulos Alterados)
         window.imprimirCupom = function(venda, tipo = "Venda") {
             const divCupom = document.getElementById('cupom-impressao');
             const numeroPedido = venda.numero ? `#${venda.numero}` : 'S/N';
@@ -755,7 +798,7 @@
                 metodoPagamentoCaixa = null;
                 document.querySelectorAll('.btn-pagar').forEach(b => b.classList.remove('selecionado'));
                 
-            } catch (e) { console.error(e); alert("Falha ao salvar a venda."); }
+            } catch (e) { console.error(e); alert("Falha ao salvar a venda. Tente novamente."); }
         };
 
         // ==========================================
