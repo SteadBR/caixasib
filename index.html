@@ -103,7 +103,7 @@
         .total-destaque { font-weight: bold; color: #e74c3c; font-size: 1.2rem; }
         
         .form-cadastro { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .form-cadastro input { flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        .form-cadastro input, .form-cadastro select { flex: 1; min-width: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
         .form-cadastro button { padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
         
         /* Filtro de Datas no Relatório */
@@ -131,7 +131,7 @@
                 margin: 0 auto; 
                 padding: 0; 
                 font-family: 'Courier New', Courier, monospace; 
-                font-size: 14px; /* Aumentado */
+                font-size: 14px; 
                 color: black; 
             }
             .cupom-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
@@ -215,22 +215,39 @@
 
     <main class="container escondido" id="tela-produtos">
         <div class="tela-conteudo">
-            <div style="max-width: 900px; margin: 0 auto; width: 100%;">
-                <h2>Gerenciar Produtos e Combos</h2>
+            <div style="max-width: 1000px; margin: 0 auto; width: 100%;">
+                <h2>Gerenciar Produtos, Estoque e Combos</h2>
                 <div class="form-cadastro">
                     <input type="hidden" id="produto-id">
-                    <input type="text" id="produto-nome" placeholder="Nome do produto..." autocomplete="off" style="flex: 2;">
-                    <input type="number" id="produto-preco" placeholder="Preço (Un.)" step="0.01" min="0" style="flex: 1;">
-                    <input type="number" id="produto-combo-qtd" placeholder="Qtd. Combo (Opcional)" min="2" style="flex: 1;">
-                    <input type="number" id="produto-combo-preco" placeholder="Preço Combo" step="0.01" min="0" style="flex: 1;">
                     
-                    <button onclick="window.salvarProduto()">Salvar</button>
-                    <button onclick="window.limparFormProduto()" style="background-color: #95a5a6;">Cancelar</button>
+                    <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 10px;">
+                        <input type="text" id="produto-nome" placeholder="Nome do produto..." autocomplete="off" style="flex: 2;">
+                        <input type="number" id="produto-estoque" placeholder="Qtd. em Estoque" min="0" style="flex: 1;">
+                        <input type="number" id="produto-custo" placeholder="Custo Pago (Un.)" step="0.01" min="0" style="flex: 1;">
+                        <input type="number" id="produto-preco" placeholder="Preço Venda (Un.)" step="0.01" min="0" style="flex: 1;">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; width: 100%;">
+                        <input type="text" id="produto-fornecedor" placeholder="Nome do Fornecedor..." autocomplete="off" style="flex: 1.5;">
+                        <select id="produto-status-pagamento" style="flex: 1;">
+                            <option value="Pago">Fornecedor: Pago</option>
+                            <option value="Pendente">Fornecedor: A Pagar (Pendente)</option>
+                        </select>
+                        <input type="number" id="produto-combo-qtd" placeholder="Qtd. Combo (Opcional)" min="2" style="flex: 1;">
+                        <input type="number" id="produto-combo-preco" placeholder="Preço Combo" step="0.01" min="0" style="flex: 1;">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; width: 100%; justify-content: flex-end; margin-top: 10px;">
+                        <button onclick="window.salvarProduto()">Salvar Produto</button>
+                        <button onclick="window.limparFormProduto()" style="background-color: #95a5a6;">Cancelar</button>
+                    </div>
                 </div>
-                <p style="font-size: 0.85rem; color: #7f8c8d; margin-top: -10px; margin-bottom: 20px;">*Para criar promoção (ex: 3 por R$ 7,00), preencha Qtd Combo com "3" e Preço Combo com "7,00". Deixe em branco se não houver combo.</p>
+                
+                <p style="font-size: 0.85rem; color: #7f8c8d; margin-top: -10px; margin-bottom: 20px;">*A quantidade em estoque será abatida automaticamente ao finalizar uma venda no caixa.</p>
+                
                 <div class="secao-conteudo">
-                    <table id="tabela-lista-produtos">
-                        <thead><tr><th>Nome</th><th>Preço Un.</th><th>Promoção/Combo</th><th>Ações</th></tr></thead>
+                    <table id="tabela-lista-produtos" style="font-size: 0.9rem;">
+                        <thead><tr><th>Nome</th><th>Estoque</th><th>Custo / Venda</th><th>Fornecedor</th><th>Combo</th><th>Ações</th></tr></thead>
                         <tbody></tbody>
                     </table>
                 </div>
@@ -383,7 +400,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, getDocs, getDoc, setDoc, deleteDoc, doc, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager, collection, addDoc, getDocs, getDoc, setDoc, deleteDoc, doc, query, orderBy, limit, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -541,7 +558,7 @@
         };
 
         // ==========================================
-        // PRODUTOS & COMBOS
+        // PRODUTOS, ESTOQUE & COMBOS
         // ==========================================
         window.configurarPesquisaProdutos = function() {
             document.getElementById('busca-produto-caixa').addEventListener('input', function() {
@@ -565,6 +582,10 @@
                         id: doc.id, 
                         nome: data.nome, 
                         preco: parseFloat(data.preco),
+                        custo: data.custo ? parseFloat(data.custo) : 0,
+                        estoque: data.estoque ? parseInt(data.estoque) : 0,
+                        fornecedor: data.fornecedor || '',
+                        statusPagamento: data.statusPagamento || 'Pago',
                         comboQtd: data.comboQtd ? parseInt(data.comboQtd) : null,
                         comboPreco: data.comboPreco ? parseFloat(data.comboPreco) : null
                     });
@@ -604,7 +625,19 @@
                 const tr = document.createElement('tr');
                 const txtCombo = p.comboQtd && p.comboPreco ? `${p.comboQtd}x = R$ ${p.comboPreco.toFixed(2).replace('.', ',')}` : '-';
                 
-                tr.innerHTML = `<td>${p.nome}</td><td>R$ ${p.preco.toFixed(2).replace('.', ',')}</td><td>${txtCombo}</td>
+                // Sistema de Cor de Estoque (Alerta visual)
+                let corEstoque = '#27ae60'; // Verde
+                if(p.estoque <= 5 && p.estoque > 0) corEstoque = '#f39c12'; // Laranja (Acabando)
+                if(p.estoque <= 0) corEstoque = '#c0392b'; // Vermelho (Zerado/Negativo)
+
+                const txtFornecedor = p.fornecedor ? `${p.fornecedor} <br><small style="color: ${p.statusPagamento === 'Pago' ? 'green':'red'}">(${p.statusPagamento})</small>` : '-';
+
+                tr.innerHTML = `
+                <td>${p.nome}</td>
+                <td style="color: ${corEstoque}; font-weight: bold; font-size: 1.1rem;">${p.estoque} un.</td>
+                <td><small style="color:gray;">Custo: R$ ${p.custo.toFixed(2).replace('.', ',')}</small><br><b>Venda: R$ ${p.preco.toFixed(2).replace('.', ',')}</b></td>
+                <td>${txtFornecedor}</td>
+                <td>${txtCombo}</td>
                 <td>
                     <button class="btn-acao btn-editar" onclick="window.editarProduto('${p.id}')">Editar</button>
                     <button class="btn-acao btn-excluir" onclick="window.excluirProduto('${p.id}')">Excluir</button>
@@ -618,12 +651,25 @@
             const nome = document.getElementById('produto-nome').value.trim();
             const preco = parseFloat(document.getElementById('produto-preco').value.replace(',', '.'));
             
+            // Novos campos
+            const estoque = parseInt(document.getElementById('produto-estoque').value) || 0;
+            const custo = parseFloat(document.getElementById('produto-custo').value.replace(',', '.')) || 0;
+            const fornecedor = document.getElementById('produto-fornecedor').value.trim();
+            const statusPagamento = document.getElementById('produto-status-pagamento').value;
+
             let comboQtd = document.getElementById('produto-combo-qtd').value;
             let comboPreco = document.getElementById('produto-combo-preco').value;
 
-            if (!nome || isNaN(preco)) { alert("Preencha Nome e Preço Corretamente."); return; }
+            if (!nome || isNaN(preco)) { alert("Preencha Nome e Preço de Venda Corretamente."); return; }
 
-            const produtoData = { nome: nome, preco: preco };
+            const produtoData = { 
+                nome: nome, 
+                preco: preco,
+                estoque: estoque,
+                custo: custo,
+                fornecedor: fornecedor,
+                statusPagamento: statusPagamento
+            };
             
             if(comboQtd && comboPreco) {
                 produtoData.comboQtd = parseInt(comboQtd);
@@ -644,6 +690,12 @@
                 document.getElementById('produto-id').value = p.id; 
                 document.getElementById('produto-nome').value = p.nome; 
                 document.getElementById('produto-preco').value = p.preco.toFixed(2); 
+                
+                document.getElementById('produto-estoque').value = p.estoque; 
+                document.getElementById('produto-custo').value = p.custo ? p.custo.toFixed(2) : ''; 
+                document.getElementById('produto-fornecedor').value = p.fornecedor; 
+                document.getElementById('produto-status-pagamento').value = p.statusPagamento; 
+
                 document.getElementById('produto-combo-qtd').value = p.comboQtd || ''; 
                 document.getElementById('produto-combo-preco').value = p.comboPreco ? p.comboPreco.toFixed(2) : ''; 
             }
@@ -654,12 +706,16 @@
             document.getElementById('produto-id').value = ''; 
             document.getElementById('produto-nome').value = ''; 
             document.getElementById('produto-preco').value = ''; 
+            document.getElementById('produto-estoque').value = ''; 
+            document.getElementById('produto-custo').value = ''; 
+            document.getElementById('produto-fornecedor').value = ''; 
+            document.getElementById('produto-status-pagamento').value = 'Pago'; 
             document.getElementById('produto-combo-qtd').value = ''; 
             document.getElementById('produto-combo-preco').value = ''; 
         };
 
         // ==========================================
-        // CAIXA E MATEMÁTICA DE COMBOS
+        // CAIXA / CARRINHO / PAGAMENTO UNIFICADO
         // ==========================================
         window.adicionarAoCarrinho = function(produto) { 
             const itemExistente = carrinho.find(i => i.id === produto.id);
@@ -856,12 +912,27 @@
             };
 
             try {
+                // 1. Salva a venda
                 await addDoc(collection(db, "vendas"), venda);
-                await setDoc(doc(db, "clientes", clienteValido.id), { nome: clienteValido.nome, telefone: clienteValido.telefone, credito: novoSaldo });
                 
+                // 2. Atualiza Saldo do Cliente
+                await setDoc(doc(db, "clientes", clienteValido.id), { nome: clienteValido.nome, telefone: clienteValido.telefone, credito: novoSaldo });
                 clienteValido.credito = novoSaldo;
+                
+                // 3. ATUALIZA O ESTOQUE DOS PRODUTOS VENDIDOS
+                for (const item of itensComprados) {
+                    const prodCache = listaProdutosCache.find(p => p.id === item.id);
+                    if (prodCache && prodCache.estoque !== undefined) {
+                        let novoEstoque = prodCache.estoque - item.qtd;
+                        // Permite ficar negativo para não travar a venda, serve como aviso
+                        await updateDoc(doc(db, "produtos", item.id), { estoque: novoEstoque });
+                    }
+                }
+                
+                // Imprime Cupom
                 window.imprimirCupom(venda, "Venda");
 
+                // Reseta Caixa e recarrega os estoques na tela
                 carrinho = []; 
                 window.atualizarCarrinho(); 
                 inputBusca.value = '';
@@ -869,6 +940,9 @@
                 metodoPagamentoCaixa = null;
                 document.querySelectorAll('.btn-pagar').forEach(b => b.classList.remove('selecionado'));
                 
+                // Atualiza a tabela de produtos invisível em background para refletir a nova quantidade
+                window.buscarProdutos(); 
+
             } catch (e) { console.error(e); alert("Falha ao salvar a venda."); }
         };
 
@@ -1033,7 +1107,7 @@
         };
 
         // ==========================================
-        // RELATÓRIOS AVANÇADOS (O LIVRO RAZÃO)
+        // RELATÓRIOS AVANÇADOS
         // ==========================================
         window.configurarPesquisaClientesRelatorio = function() {
             const inputBusca = document.getElementById('busca-cliente-relatorio');
@@ -1073,10 +1147,14 @@
 
                 const queryTrans = await getDocs(collection(db, "transacoes_credito"));
                 transacoesCacheGlobal = [];
-                queryTrans.forEach((doc) => {
-                    transacoesCacheGlobal.push(doc.data());
-                });
+                queryTrans.forEach((doc) => transacoesCacheGlobal.push(doc.data()));
                 
+                if(!document.getElementById('filtro-data-inicio').value) {
+                    const dataHojeIso = new Date().toISOString().split('T')[0];
+                    document.getElementById('filtro-data-inicio').value = dataHojeIso;
+                    document.getElementById('filtro-data-fim').value = dataHojeIso;
+                }
+
                 window.atualizarFechamentoCaixa();
                 window.atualizarTabelasGlobais();
 
@@ -1084,6 +1162,12 @@
                 document.getElementById('resultado-extrato').classList.add('escondido');
             } catch(e) { console.error(e); }
         };
+
+        window.limparFiltroData = function() {
+            document.getElementById('filtro-data-inicio').value = '';
+            document.getElementById('filtro-data-fim').value = '';
+            window.atualizarFechamentoCaixa();
+        }
 
         window.atualizarFechamentoCaixa = function() {
             const dataInicioIso = document.getElementById('filtro-data-inicio').value;
@@ -1160,7 +1244,6 @@
             } else {
                 historicoMisto.forEach(item => {
                     const tr = document.createElement('tr');
-                    
                     let acoes = item.isVenda 
                         ? `<button class="btn-acao btn-credito" style="padding:2px 5px;" title="Reimprimir" onclick="window.reimprimirVenda('${item.idVenda}')">🖨️</button>
                            <button class="btn-acao btn-excluir" style="padding:2px 5px;" title="Excluir" onclick="window.excluirVenda('${item.idVenda}')">🗑️</button>`
@@ -1183,6 +1266,7 @@
             document.getElementById('fechamento-aportes').textContent = `R$ ${aportesCaixa.toFixed(2).replace('.', ',')}`;
             document.getElementById('fechamento-pendurado').textContent = `R$ ${novosFiados.toFixed(2).replace('.', ',')}`;
 
+            // --- ATUALIZA A TABELA DE TOP 5 BASEADA NESSE FILTRO DE DATA ---
             const consumoPorClienteNoPeriodo = {};
             vendasFiltradas.forEach(v => {
                 consumoPorClienteNoPeriodo[v.cliente] = (consumoPorClienteNoPeriodo[v.cliente] || 0) + v.total;
@@ -1196,7 +1280,7 @@
                 .sort((a, b) => b.total - a.total)
                 .slice(0, 5);
 
-            rankingEmMemoriaParaImpressao = rankingArray;
+            rankingEmMemoriaParaImpressao = rankingArray; 
 
             if (rankingArray.length === 0) {
                 tbodyRanking.innerHTML = '<tr><td colspan="3">Nenhuma venda registrada no período.</td></tr>';
@@ -1210,12 +1294,6 @@
             }
         };
 
-        window.limparFiltroData = function() {
-            document.getElementById('filtro-data-inicio').value = '';
-            document.getElementById('filtro-data-fim').value = '';
-            window.atualizarFechamentoCaixa();
-        }
-
         window.reimprimirVenda = function(id) {
             const venda = vendasCacheGlobal.find(v => v.id === id);
             if (venda) { window.imprimirCupom(venda, "Reimpressão"); } 
@@ -1228,7 +1306,7 @@
             if(confirm(`ATENÇÃO: Você está prestes a apagar o Pedido #${venda.numero || 'S/N'}. O saldo do cliente será restaurado manualmente se necessário.\n\nDeseja continuar?`)) {
                 try {
                     await deleteDoc(doc(db, "vendas", id));
-                    alert("Venda apagada com sucesso!");
+                    alert("Venda apagada com sucesso! Lembre-se de reajustar o Saldo do cliente na aba Clientes se a venda apagada afetou o saldo dele.");
                     await window.gerarRelatorios(); 
                 } catch (e) { console.error("Erro ao apagar", e); alert("Erro ao excluir."); }
             }
@@ -1249,21 +1327,21 @@
             });
             if (!temFiado) tbodyFiados.innerHTML = '<tr><td colspan="2">Nenhuma dívida pendente.</td></tr>';
 
-            const totalGastoPorCliente = {}; 
+            const totalGastoPorClienteGlobal = {}; 
             vendasCacheGlobal.forEach(v => {
-                totalGastoPorCliente[v.cliente] = (totalGastoPorCliente[v.cliente] || 0) + v.total;
+                totalGastoPorClienteGlobal[v.cliente] = (totalGastoPorClienteGlobal[v.cliente] || 0) + v.total;
             });
 
             const tbodyConsumo = document.querySelector('#tabela-consumo-todos tbody');
             tbodyConsumo.innerHTML = '';
-            const consumoArray = Object.keys(totalGastoPorCliente)
-                .map(cliente => ({ nome: cliente, total: totalGastoPorCliente[cliente] }))
+            const consumoGlobalArray = Object.keys(totalGastoPorClienteGlobal)
+                .map(cliente => ({ nome: cliente, total: totalGastoPorClienteGlobal[cliente] }))
                 .sort((a, b) => a.nome.localeCompare(b.nome));
             
-            if (consumoArray.length === 0) {
+            if (consumoGlobalArray.length === 0) {
                 tbodyConsumo.innerHTML = '<tr><td colspan="2">Nenhuma venda registrada ainda.</td></tr>';
             } else {
-                consumoArray.forEach(item => {
+                consumoGlobalArray.forEach(item => {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td>${item.nome}</td><td style="text-align:right;">R$ ${item.total.toFixed(2).replace('.', ',')}</td>`;
                     tbodyConsumo.appendChild(tr);
@@ -1293,8 +1371,7 @@
 
             vendasDoCliente.forEach(v => {
                 linhaDoTempo.push({
-                    dataObj: parseDataHoraBR(v.data),
-                    dataStr: v.data,
+                    dataObj: parseDataHoraBR(v.data), dataStr: v.data,
                     historico: `Pedido #${v.numero || 'S/N'} (${v.metodoPagamento})`,
                     saida: v.total,
                     entrada: (v.valorPago !== undefined ? v.valorPago : (v.metodoPagamento !== 'Pendurado' ? v.total : 0)), 
@@ -1304,8 +1381,7 @@
 
             transacoesDoCliente.forEach(t => {
                 linhaDoTempo.push({
-                    dataObj: parseDataHoraBR(t.data),
-                    dataStr: t.data,
+                    dataObj: parseDataHoraBR(t.data), dataStr: t.data,
                     historico: t.tipo,
                     saida: t.valor < 0 ? Math.abs(t.valor) : 0,
                     entrada: t.valor > 0 ? t.valor : 0,
@@ -1322,11 +1398,7 @@
                 linha.saldoParcial = saldoAcumulado;
             });
 
-            extratoEmMemoria = {
-                cliente: nomeCorreto,
-                saldoFinal: saldoAcumulado,
-                linhas: linhaDoTempo
-            };
+            extratoEmMemoria = { cliente: nomeCorreto, saldoFinal: saldoAcumulado, linhas: linhaDoTempo };
 
             let html = `<h4 style="margin-bottom: 10px; color: #2c3e50; font-size: 1.3rem;">Conta Corrente: <span style="color:#3498db;">${nomeCorreto}</span></h4>`;
             
@@ -1373,16 +1445,16 @@
             
             let htmlCupom = `
                 <div style="text-align: center; margin-bottom: 10px;">
-                    <h3 style="margin: 0; font-size: 18px;">CONJUBACENTRO</h3>
-                    <h4 style="margin: 0; font-size: 15px;">CANTINA</h4>
-                    <p style="margin: 0; font-size: 13px; margin-top: 3px;">*** EXTRATO DA CONTA ***</p>
+                    <h3 style="margin: 0; font-size: 16px;">CONJUBACENTRO</h3>
+                    <h4 style="margin: 0; font-size: 13px;">CANTINA</h4>
+                    <p style="margin: 0; font-size: 11px; margin-top: 3px;">*** EXTRATO DA CONTA ***</p>
                 </div>
-                <p style="margin: 0; font-size: 14px;"><strong>Cliente:</strong> ${extratoEmMemoria.cliente}</p>
-                <p style="margin: 0; font-size: 12px;"><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+                <p style="margin: 0;"><strong>Cliente:</strong> ${extratoEmMemoria.cliente}</p>
+                <p style="margin: 0; font-size: 10px;"><strong>Gerado em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
                 
                 <hr style="border-top: 1px dashed black; margin: 8px 0;">
                 
-                <table class="cupom-table" style="font-size: 13px;">
+                <table class="cupom-table" style="font-size: 10px;">
                     <thead><tr><th style="width:30%; text-align:left;">Data</th><th style="width:40%; text-align:center;">Saída / Ent</th><th style="width:30%; text-align:right;">Saldo</th></tr></thead>
                     <tbody>
             `;
@@ -1392,7 +1464,7 @@
                 const indicadorSinal = l.saldoParcial < 0 ? '-' : '';
                 
                 htmlCupom += `
-                    <tr><td colspan="3" style="border: none; padding-top:4px; font-weight:bold;">${l.historico}</td></tr>
+                    <tr><td colspan="3" style="border: none; padding-top:4px;"><b>${l.historico}</b></td></tr>
                     <tr>
                         <td style="text-align:left;">${l.dataStr.split(',')[0]}</td>
                         <td style="text-align:center;">${tracoMovimento}</td>
@@ -1407,9 +1479,9 @@
                     </tbody>
                 </table>
                 <hr style="border-top: 1px dashed black; margin: 8px 0;">
-                <h3 style="text-align: right; margin: 5px 0; font-size: 16px;">SALDO FINAL: R$ ${Math.abs(extratoEmMemoria.saldoFinal).toFixed(2).replace('.', ',')}</h3>
-                <h4 style="text-align: right; margin: 0; font-size: 13px;">(${txtSaldo})</h4>
-                <div style="text-align: center; margin-top: 20px; font-size: 12px;">
+                <h3 style="text-align: right; margin: 5px 0; font-size: 14px;">SALDO FINAL: R$ ${Math.abs(extratoEmMemoria.saldoFinal).toFixed(2).replace('.', ',')}</h3>
+                <h4 style="text-align: right; margin: 0; font-size: 11px;">(${txtSaldo})</h4>
+                <div style="text-align: center; margin-top: 20px; font-size: 10px;">
                     <p>Extrato para simples conferencia.</p>
                 </div>
             `;
@@ -1436,7 +1508,7 @@
                 <div style="text-align: center; margin-bottom: 10px;">
                     <h3 style="margin: 0; font-size: 18px;">CONJUBACENTRO</h3>
                     <h4 style="margin: 0; font-size: 15px;">CANTINA</h4>
-                    <p style="margin: 0; font-size: 13px; margin-top: 3px;">*** TOP 5 COMPRADORES ***</p>
+                    <p style="margin: 0; font-size: 13px; margin-top: 3px;">*** TOP COMPRADORES ***</p>
                 </div>
                 <p style="margin: 0; font-size: 13px;"><strong>Período:</strong><br>${strPeriodoImpresso}</p>
                 <p style="margin: 0; font-size: 12px;"><strong>Gerado em:</strong><br>${new Date().toLocaleString('pt-BR')}</p>
